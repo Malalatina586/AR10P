@@ -1,0 +1,12 @@
+{
+  "name": "AR10P — All Résumé in 10 Pages",
+  "short_name": "AR10P",
+  "description": "L’essentiel des livres, films, actualités et idées en 10 pages.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06091b",
+  "theme_color": "#06091b",
+  "icons": [
+    {"src":"/logo.png","sizes":"1254x1254","type":"image/png","purpose":"any maskable"}
+  ]
+}
