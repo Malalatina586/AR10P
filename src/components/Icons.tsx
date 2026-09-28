@@ -1,0 +1,17 @@
+import type { ReactNode } from "react";
+
+const Svg = ({ children, size = 20, fill = "none" }: { children: ReactNode; size?: number; fill?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
+);
+
+export const IconSearch = ({ size }: { size?: number }) => <Svg size={size}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Svg>;
+export const IconBell = ({ size }: { size?: number }) => <Svg size={size}><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></Svg>;
+export const IconHeart = ({ filled }: { filled?: boolean }) => <Svg fill={filled ? "currentColor" : "none"}><path d="M20.8 5.6a5.2 5.2 0 0 0-7.4 0L12 7l-1.4-1.4a5.2 5.2 0 0 0-7.4 7.4L12 21.8l8.8-8.8a5.2 5.2 0 0 0 0-7.4Z" /></Svg>;
+export const IconShare = () => <Svg><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></Svg>;
+export const IconDownload = ({ size }: { size?: number }) => <Svg size={size}><path d="M12 3v12m0 0-4-4m4 4 4-4M4 20h16" /></Svg>;
+export const IconSend = () => <Svg><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7Z" /></Svg>;
+export const IconClock = () => <Svg size={16}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></Svg>;
+export const IconHome = () => <Svg size={24}><path d="M3 11 12 3l9 8" /><path d="M5 10v10h14V10" /></Svg>;
+export const IconLibrary = () => <Svg size={24}><path d="M4 4v16M9 4v16M14 6l4 14M14 6l3-1 4 15" /></Svg>;
+export const IconSun = () => <Svg><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></Svg>;
+export const IconMoon = () => <Svg><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></Svg>;
