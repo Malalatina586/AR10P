@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { CATEGORIES, FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
 import FeedCard from "./FeedCard";
-import { IconBell, IconHome, IconLibrary, IconMessage, IconSearch, IconUser } from "./Icons";
+import { IconBell, IconSmartHome, IconStackPlus, IconMessages, IconSearch, IconUserTabler } from "./Icons";
 import ThemeToggle from "./ThemeToggle";
 
 // Recherche tolérante aux accents et à la casse
@@ -54,10 +54,10 @@ export default function Feed() {
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">
-        <button className="tab active" aria-current="page" aria-label="Fil"><IconHome /></button>
-        <button className="tab" disabled title="Bientôt" aria-label="Messages (bientôt)"><IconMessage size={24} /></button>
-        <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Bibliothèque (bientôt)"><IconLibrary /></button>
-        <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Profil (bientôt)"><IconUser size={24} /></button>
+        <button className="tab active" aria-current="page" aria-label="Fil"><IconSmartHome /></button>
+        <button className="tab" disabled title="Bientôt" aria-label="Messages (bientôt)"><IconMessages size={24} /></button>
+        <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Bibliothèque (bientôt)"><IconStackPlus /></button>
+        <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Profil (bientôt)"><IconUserTabler size={24} /></button>
       </nav>
     </div>
   );

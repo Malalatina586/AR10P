@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-const Svg = ({ children, size = 20, fill = "none" }: { children: ReactNode; size?: number; fill?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
+const Svg = ({ children, size = 20, fill = "none", strokeWidth = 1.8 }: { children: ReactNode; size?: number; fill?: string; strokeWidth?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
 );
 
 export const IconSearch = ({ size }: { size?: number }) => <Svg size={size}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Svg>;
@@ -19,3 +19,30 @@ export const IconMessage = ({ size }: { size?: number }) => <Svg size={size}><pa
 export const IconUser = ({ size }: { size?: number }) => <Svg size={size}><circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" /></Svg>;
 export const IconLock = ({ size }: { size?: number }) => <Svg size={size}><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></Svg>;
 export const IconBookmark = ({ size }: { size?: number }) => <Svg size={size}><path d="M6 3h12v18l-6-4-6 4Z" /></Svg>;
+
+export const IconSmartHome = ({ size = 24 }: { size?: number }) => <Svg size={size} strokeWidth={2}>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M19 8.71l-5.333 -4.148a2.666 2.666 0 0 0 -3.274 0l-5.334 4.148a2.665 2.665 0 0 0 -1.029 2.105v7.2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-7.2c0 -.823 -.38 -1.6 -1.03 -2.105" />
+  <path d="M16 15c-2.21 1.333 -5.792 1.333 -8 0" />
+</Svg>;
+
+export const IconMessages = ({ size = 24 }: { size?: number }) => <Svg size={size} strokeWidth={2}>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" />
+  <path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" />
+</Svg>;
+
+export const IconStackPlus = ({ size = 24 }: { size?: number }) => <Svg size={size} strokeWidth={2}>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M12 4l-8 4l8 4l8 -4l-8 -4" />
+  <path d="M4 12l8 4" />
+  <path d="M4 16l8 4" />
+  <path d="M16 19h6" />
+  <path d="M19 16v6" />
+</Svg>;
+
+export const IconUserTabler = ({ size = 24 }: { size?: number }) => <Svg size={size} strokeWidth={2}>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</Svg>;
