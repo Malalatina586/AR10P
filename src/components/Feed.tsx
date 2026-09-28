@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { CATEGORIES, FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
 import FeedCard from "./FeedCard";
-import { IconBell, IconHome, IconLibrary, IconSearch } from "./Icons";
+import { IconBell, IconHome, IconLibrary, IconMessage, IconSearch, IconUser } from "./Icons";
 import ThemeToggle from "./ThemeToggle";
 
 // Recherche tolérante aux accents et à la casse
@@ -54,10 +54,10 @@ export default function Feed() {
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">
-        <button className="tab active" aria-current="page"><IconHome /><span>Fil</span></button>
-        <button className="tab" onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); searchRef.current?.focus(); }}><IconSearch size={24} /><span>Recherche</span></button>
-        <button className="tab" disabled title="Bientôt"><IconLibrary /><span>Bibliothèque</span></button>
-        <button className="tab" disabled title="Bientôt"><IconBell size={24} /><span>Alertes</span></button>
+        <button className="tab active" aria-current="page" aria-label="Fil"><IconHome /></button>
+        <button className="tab" disabled title="Bientôt" aria-label="Messages (bientôt)"><IconMessage size={24} /></button>
+        <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Bibliothèque (bientôt)"><IconLibrary /></button>
+        <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Profil (bientôt)"><IconUser size={24} /></button>
       </nav>
     </div>
   );

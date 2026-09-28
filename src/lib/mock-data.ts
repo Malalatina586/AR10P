@@ -19,6 +19,8 @@ type Base = {
   title: string;
   description: string;
   publishedAt: string;
+  more?: string;
+  comments: number;
   likes: number;
   shares: number;
 };
@@ -80,6 +82,7 @@ export const FEED: FeedItem[] = [
       "Les 7 idées clés sur l'argent et les actifs, avec 3 actions à appliquer cette semaine.",
     readingMinutes: 6,
     publishedAt: hoursAgo(2),
+    comments: 0,
     likes: 248,
     shares: 61,
   },
@@ -93,6 +96,7 @@ export const FEED: FeedItem[] = [
       "Comprendre ce que l'IA sait faire, ses limites et comment l'utiliser dès aujourd'hui.",
     readingMinutes: 7,
     publishedAt: hoursAgo(9),
+    comments: 0,
     likes: 173,
     shares: 44,
   },
@@ -106,6 +110,7 @@ export const FEED: FeedItem[] = [
       "Mali, Songhaï, Éthiopie… les repères pour comprendre cinq siècles d'histoire.",
     readingMinutes: 8,
     publishedAt: hoursAgo(30),
+    comments: 0,
     likes: 131,
     shares: 38,
   },
@@ -119,6 +124,7 @@ export const FEED: FeedItem[] = [
       "Budget, fonds d'urgence, premiers placements : un plan simple en 4 étapes.",
     readingMinutes: 6,
     publishedAt: hoursAgo(52),
+    comments: 0,
     likes: 205,
     shares: 57,
   },
@@ -132,6 +138,7 @@ export const FEED: FeedItem[] = [
       "Valider une idée, trouver ses 10 premiers clients et garder ses coûts bas.",
     readingMinutes: 7,
     publishedAt: hoursAgo(75),
+    comments: 0,
     likes: 164,
     shares: 41,
   },
@@ -145,6 +152,7 @@ export const FEED: FeedItem[] = [
       "Comprendre les modèles génératifs, leurs usages et les limites à connaître.",
     readingMinutes: 7,
     publishedAt: hoursAgo(12),
+    comments: 0,
     likes: 189,
     shares: 52,
   },
@@ -158,6 +166,7 @@ export const FEED: FeedItem[] = [
       "Les principes essentiels pour transformer une intention en routine durable.",
     readingMinutes: 6,
     publishedAt: hoursAgo(18),
+    comments: 0,
     likes: 156,
     shares: 39,
   },
@@ -171,6 +180,7 @@ export const FEED: FeedItem[] = [
       "Les bases du sommeil, les habitudes qui peuvent l'améliorer et les idées reçues.",
     readingMinutes: 6,
     publishedAt: hoursAgo(22),
+    comments: 0,
     likes: 142,
     shares: 31,
   },
@@ -184,6 +194,7 @@ export const FEED: FeedItem[] = [
     description: "Les grands événements mondiaux expliqués simplement.",
     readingMinutes: 6,
     publishedAt: hoursAgo(4),
+    comments: 0,
     likes: 128,
     shares: 27,
   },
@@ -196,6 +207,7 @@ export const FEED: FeedItem[] = [
     description: "Les grands enjeux du sport moderne, son économie et son évolution.",
     readingMinutes: 5,
     publishedAt: hoursAgo(6),
+    comments: 0,
     likes: 119,
     shares: 24,
   },
@@ -208,6 +220,7 @@ export const FEED: FeedItem[] = [
     description: "Comprendre les mécanismes qui rendent les histoires captivantes.",
     readingMinutes: 5,
     publishedAt: hoursAgo(8),
+    comments: 0,
     likes: 104,
     shares: 21,
   },
@@ -220,6 +233,7 @@ export const FEED: FeedItem[] = [
     description: "Des principes simples pour mieux mémoriser et développer ses compétences.",
     readingMinutes: 6,
     publishedAt: hoursAgo(10),
+    comments: 0,
     likes: 97,
     shares: 19,
   },
@@ -232,6 +246,7 @@ export const FEED: FeedItem[] = [
     description: "Les grandes sources d énergie et les transformations à venir.",
     readingMinutes: 7,
     publishedAt: hoursAgo(12),
+    comments: 0,
     likes: 91,
     shares: 18,
   },

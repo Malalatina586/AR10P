@@ -2,23 +2,16 @@
 
 import { useState } from "react";
 import { FeedItem, timeAgo } from "@/lib/mock-data";
-import {
-  IconClock,
-  IconComment,
-  IconDownload,
-  IconHeart,
-  IconSend,
-  IconShare,
-} from "./Icons";
+import { IconBookmark, IconClock, IconDownload, IconHeart, IconMessage, IconShare } from "./Icons";
 
-const initials = (name: string) =>
-  name
-    .split(/[\s.]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
+const initials = (name: string) => name.split(/[\s.]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+
+// Placeholder tant que l'authentification (Supabase) n'est pas branchée.
+// Une fois les comptes en place, ceci ouvrira la fenêtre de connexion/inscription
+// au lieu de cette alerte, sans changer le reste du composant.
+function requireAccount(action: string) {
+  window.alert(`Crée un compte gratuit pour ${action}.`);
+}
 
 function Tile({ tone }: { tone: "blue" | "green" }) {
   return (
@@ -29,66 +22,43 @@ function Tile({ tone }: { tone: "blue" | "green" }) {
   );
 }
 
-function Actions({ item, extra }: { item: FeedItem; extra: React.ReactNode }) {
+function Actions({ item, downloads }: { item: FeedItem; downloads?: number }) {
   const [liked, setLiked] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([
-    "Très intéressant !",
-    "Merci pour ce résumé.",
-  ]);
 
-  const publishComment = () => {
-    const text = comment.trim();
-    if (!text) return;
-    setComments((current) => [...current, text]);
-    setComment("");
-  };
+  function like() {
+    // J'aime nécessite un compte (comme commenter, télécharger, bibliothèque).
+    requireAccount("aimer ce résumé");
+  }
 
   return (
+    <div className="actions">
+      <button className={`stat${liked ? " liked" : ""}`} onClick={liked ? () => setLiked(false) : like} aria-pressed={liked} aria-label="J'aime">
+        <IconHeart filled={liked} /> {item.likes}
+      </button>
+      <button className="stat" onClick={() => requireAccount("commenter")} aria-label="Commenter">
+        <IconMessage size={19} /> {item.comments}
+      </button>
+      <button className="stat" aria-label="Partager"><IconShare /> {item.shares}</button>
+      {downloads !== undefined && <span className="stat stat-static"><IconDownload size={19} /> {downloads}</span>}
+    </div>
+  );
+}
+
+function ExpandableText({ description, more }: { description: string; more?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
     <>
-      <div className="actions">
-        <button
-          className={`stat${liked ? " liked" : ""}`}
-          onClick={() => setLiked((v) => !v)}
-          aria-pressed={liked}
-          aria-label="J'aime"
-        >
-          <IconHeart filled={liked} /> {item.likes + (liked ? 1 : 0)}
-        </button>
-        <button
-          className="stat"
-          onClick={() => setShowComments((v) => !v)}
-          aria-expanded={showComments}
-          aria-label="Commenter"
-        >
-          <IconComment /> {comments.length}
-        </button>
-        <button className="stat" aria-label="Partager">
-          <IconShare /> {item.shares}
-        </button>
-        <div className="spacer" />
-        {extra}
-      </div>
-      {showComments && (
-        <div className="comments">
-          <div className="comments-title">Commentaires</div>
-          {comments.map((text, index) => (
-            <div className="comment" key={`${index}-${text}`}>
-              {text}
-            </div>
-          ))}
-          <div className="comment-form">
-            <input
-              value={comment}
-              onChange={(event) => setComment(event.target.value)}
-              placeholder="Écrire un commentaire…"
-              aria-label="Écrire un commentaire"
-            />
-            <button type="button" onClick={publishComment}>
-              Publier
-            </button>
-          </div>
+      <p className="post-desc">{description}</p>
+      {more && (
+        <>
+          {open && <p className="post-more">{more}</p>}
+          <button className="see-more" onClick={() => setOpen((v) => !v)}>{open ? "Voir moins" : "Voir plus"}</button>
+        </>
+      )}
+      {open && (
+        <div className="unlock-actions">
+          <button className="pill" onClick={() => requireAccount("télécharger le PDF")}><IconDownload size={18} /> Télécharger</button>
+          <button className="pill pill-accent" onClick={() => requireAccount("ajouter à ta bibliothèque")}><IconBookmark size={18} /> Ajouter à la bibliothèque</button>
         </div>
       )}
     </>
@@ -101,17 +71,12 @@ export default function FeedCard({ item }: { item: FeedItem }) {
       <article className="post post-sponsored">
         <header className="post-head">
           <div className="avatar avatar-amber">{initials(item.sponsor)}</div>
-          <div className="who">
-            <strong>{item.sponsor}</strong>
-            <span>{item.place}</span>
-          </div>
+          <div className="who"><strong>{item.sponsor}</strong><span>{item.place}</span></div>
           <span className="badge badge-amber">Sponsorisé</span>
         </header>
         <h2 className="post-title">{item.title}</h2>
         <p className="post-desc">{item.description}</p>
-        <a className="cta" href="#">
-          {item.cta} →
-        </a>
+        <a className="cta" href="#">{item.cta} →</a>
       </article>
     );
   }
@@ -121,29 +86,17 @@ export default function FeedCard({ item }: { item: FeedItem }) {
       <article className="post">
         <header className="post-head">
           <div className="avatar avatar-green">{initials(item.creator)}</div>
-          <div className="who">
-            <strong>{item.creator}</strong>
-            <span>
-              {item.job} · {timeAgo(item.publishedAt)}
-            </span>
-          </div>
+          <div className="who"><strong>{item.creator}</strong><span>{item.job} · {timeAgo(item.publishedAt)}</span></div>
           <span className="badge badge-green">Créateur</span>
         </header>
         <div className="post-body">
           <Tile tone="green" />
           <div>
             <h2 className="post-title">{item.title}</h2>
-            <p className="post-desc">{item.description}</p>
+            <ExpandableText description={item.description} more={item.more} />
           </div>
         </div>
-        <Actions
-          item={item}
-          extra={
-            <span className="stat">
-              <IconDownload size={20} /> {item.downloads}
-            </span>
-          }
-        />
+        <Actions item={item} downloads={item.downloads} />
       </article>
     );
   }
@@ -152,36 +105,17 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     <article className="post">
       <header className="post-head">
         <div className="avatar avatar-blue">AR</div>
-        <div className="who">
-          <strong>AR10P</strong>
-          <span>
-            {timeAgo(item.publishedAt)} · {item.category}
-          </span>
-        </div>
+        <div className="who"><strong>AR10P</strong><span>{timeAgo(item.publishedAt)} · {item.category}</span></div>
       </header>
       <div className="post-body">
         <Tile tone="blue" />
         <div>
           <h2 className="post-title">{item.title}</h2>
-          <p className="post-desc">{item.description}</p>
-          <p className="reading">
-            <IconClock /> {item.readingMinutes} min de lecture
-          </p>
+          <ExpandableText description={item.description} more={item.more} />
+          <p className="reading"><IconClock /> {item.readingMinutes} min de lecture</p>
         </div>
       </div>
-      <Actions
-        item={item}
-        extra={
-          <>
-            <button className="pill">
-              <IconDownload size={18} /> PDF
-            </button>
-            <button className="pill pill-accent">
-              <IconSend /> Telegram
-            </button>
-          </>
-        }
-      />
+      <Actions item={item} />
     </article>
   );
 }

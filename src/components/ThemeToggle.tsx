@@ -6,13 +6,16 @@ import { IconMoon, IconSun } from "./Icons";
 const KEY = "ar10p-theme";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof document !== "undefined" && document.documentElement.dataset.theme === "dark"
+      ? "dark"
+      : "light"
+  );
 
   function toggle() {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
     document.documentElement.dataset.theme = next;
-
     try {
       localStorage.setItem(KEY, next);
     } catch {
@@ -24,11 +27,7 @@ export default function ThemeToggle() {
     <button
       className="icon-btn"
       onClick={toggle}
-      aria-label={
-        theme === "dark"
-          ? "Passer en mode clair"
-          : "Passer en mode sombre"
-      }
+      aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
     >
       {theme === "dark" ? <IconSun /> : <IconMoon />}
     </button>

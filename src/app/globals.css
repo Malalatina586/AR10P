@@ -62,11 +62,16 @@ button:disabled{cursor:default}
 .reading{display:flex;align-items:center;gap:6px;margin:10px 0 0;color:var(--muted);font-size:14px}
 .cta{display:inline-block;margin-top:12px;color:var(--blue);font-size:16px}
 
+/* Texte dépliable ("Voir plus") */
+.post-more{margin:8px 0 0;color:var(--muted);font-size:15px;line-height:1.45}
+.see-more{display:block;border:0;background:none;padding:6px 0 0;color:var(--blue);font-size:15px;font-weight:600}
+.unlock-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
 /* Actions */
-.actions{display:flex;align-items:center;gap:12px;margin-top:14px}
-.spacer{flex:1}
+.actions{display:flex;align-items:center;gap:16px;margin-top:14px}
 .stat{display:flex;align-items:center;gap:5px;border:0;background:none;padding:6px 0;color:var(--muted);font-size:15px}
 .stat.liked{color:#d63a5a}
+.stat-static{margin-left:auto}
 .pill{display:flex;align-items:center;gap:6px;border:1px solid var(--muted);background:none;border-radius:12px;padding:9px 12px;font-size:14px;white-space:nowrap}
 .pill-accent{background:var(--accent-bg);border-color:var(--accent-line);color:var(--blue)}
 
@@ -76,7 +81,7 @@ button:disabled{cursor:default}
 
 /* Barre du bas */
 .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);border-inline:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));z-index:30}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:var(--muted);font-size:13px;padding:4px 0}
+.tab{display:flex;align-items:center;justify-content:center;border:0;background:none;color:var(--muted);padding:10px 0}
 .tab.active{color:var(--blue)}
 .tab:disabled{opacity:.55}
 
@@ -94,13 +99,3 @@ button:disabled{cursor:default}
 .about-foot{font-size:13px;margin-top:32px}
 
 @media(min-width:481px){body{background:var(--bg)}}
-
-.comments{margin-top:10px;padding:12px 0 2px;border-top:1px solid var(--border)}
-.comments-title{font-weight:700;font-size:14px;margin-bottom:10px}
-.comment{display:flex;align-items:center;gap:9px;margin:8px 0}
-.comment-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-size:12px;font-weight:700}
-.comment p{margin:0;font-size:14px;color:var(--text)}
-.comment-form{display:flex;gap:8px;margin-top:12px}
-.comment-form input{min-width:0;flex:1;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);padding:9px 11px;font:inherit;outline:none}
-.comment-form input:focus{border-color:var(--accent)}
-.comment-form button{border:0;border-radius:10px;padding:9px 12px;background:var(--accent);color:white;font-weight:700;cursor:pointer}

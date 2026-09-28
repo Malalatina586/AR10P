@@ -3,8 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AR10P — All Résumé in 10 Pages",
-  description:
-    "L’essentiel des livres, films, actualités et idées en 10 pages.",
+  description: "L’essentiel des livres, films, actualités et idées en 10 pages.",
   applicationName: "AR10P",
   manifest: "/manifest.webmanifest",
 };
@@ -19,11 +18,10 @@ export const viewport: Viewport = {
   ],
 };
 
+// Applique le thème enregistré avant l'affichage (clair par défaut) pour éviter tout clignotement.
 const themeScript = `try{var t=localStorage.getItem('ar10p-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}`;
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" data-theme="light" suppressHydrationWarning>
       <head>
