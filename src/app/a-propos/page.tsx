@@ -20,7 +20,7 @@ export default function About() {
       </header>
       <main className="about-body">
         <Image src="/logo.png" alt="Logo AR10P" width={96} height={96} className="about-logo" priority />
-        <h1>L'essentiel. En 10 pages.</h1>
+        <h1>L&apos;essentiel. En 10 pages.</h1>
         <p>AR10P propose des résumés courts, clairs et faciles à lire sur mobile : livres, business, histoire, technologie, finance et plus encore. Gratuit, sans inscription.</p>
         <ol className="steps">
           {steps.map(([n, t, d]) => (

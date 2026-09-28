@@ -46,11 +46,11 @@ export default function Feed() {
 
       <main className="feed">
         {items.length === 0 ? (
-          <p className="empty">Aucun résumé pour « {query || category} » pour l'instant.</p>
+          <p className="empty">Aucun résumé pour « {query || category} » pour l&apos;instant.</p>
         ) : (
           items.map((item) => <FeedCard key={item.id} item={item} />)
         )}
-        <p className="feed-end"><a href="/a-propos">À propos d'AR10P</a></p>
+        <p className="feed-end"><a href="/a-propos">À propos d&apos;AR10P</a></p>
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">
