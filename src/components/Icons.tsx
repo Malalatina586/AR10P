@@ -7,6 +7,7 @@ const Svg = ({ children, size = 20, fill = "none" }: { children: ReactNode; size
 export const IconSearch = ({ size }: { size?: number }) => <Svg size={size}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Svg>;
 export const IconBell = ({ size }: { size?: number }) => <Svg size={size}><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></Svg>;
 export const IconHeart = ({ filled }: { filled?: boolean }) => <Svg fill={filled ? "currentColor" : "none"}><path d="M20.8 5.6a5.2 5.2 0 0 0-7.4 0L12 7l-1.4-1.4a5.2 5.2 0 0 0-7.4 7.4L12 21.8l8.8-8.8a5.2 5.2 0 0 0 0-7.4Z" /></Svg>;
+export const IconComment = () => <Svg><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.6 8.6 0 0 1-3.5-.8L4 20l1.3-4A7.3 7.3 0 0 1 4.5 12 7.5 7.5 0 0 1 12 4.5a7.5 7.5 0 0 1 8 7Z" /></Svg>;
 export const IconShare = () => <Svg><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></Svg>;
 export const IconDownload = ({ size }: { size?: number }) => <Svg size={size}><path d="M12 3v12m0 0-4-4m4 4 4-4M4 20h16" /></Svg>;
 export const IconSend = () => <Svg><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7Z" /></Svg>;
