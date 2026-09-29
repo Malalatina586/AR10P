@@ -26,14 +26,14 @@ export default function Feed() {
       <header className="app-head">
         <div className="head-row">
           <h1 className="logo">AR10P</h1>
+          <label className="search">
+            <IconSearch />
+            <input ref={searchRef} type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." aria-label="Rechercher un sujet" />
+          </label>
           <div className="head-actions">
             <button className="icon-btn" aria-label="Alertes (bientôt)" title="Alertes — bientôt"><IconBell /></button>
           </div>
         </div>
-        <label className="search">
-          <IconSearch />
-          <input ref={searchRef} type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un sujet que vous aimez" aria-label="Rechercher un sujet" />
-        </label>
       </header>
 
       <main className="feed">
