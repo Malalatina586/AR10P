@@ -1,0 +1,23 @@
+/* AR10P — Styles de la feuille de partage (utilise les variables de globals.css) */
+.sh{position:fixed;inset:0;z-index:50;pointer-events:none}
+.sh.open{pointer-events:auto}
+.sh-ov{position:absolute;inset:0;background:rgba(0,0,0,.4);opacity:0;transition:opacity .2s}
+.sh.open .sh-ov{opacity:1}
+.sh-sheet{position:absolute;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;padding:8px 18px 22px;background:var(--bg);color:var(--text);border-radius:24px 24px 0 0;transform:translateY(105%);transition:transform .25s}
+.sh.open .sh-sheet{transform:none}
+.sh button{border:0;background:none;padding:0}
+.sh-hn{width:38px;height:4px;margin:0 auto 14px;border-radius:2px;background:var(--line)}
+.sh-t{margin:0 0 12px;font-size:16px;font-weight:600}
+.sh-lk{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.sh-lk span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--muted)}
+.sh-lk button{display:flex;align-items:center;gap:5px;height:34px;padding:0 14px;border-radius:17px;background:var(--blue);color:#fff;font-size:13px}
+.sh-lb{margin:16px 0 10px;font-size:12px;color:var(--muted)}
+.sh-nw{display:flex;flex-wrap:wrap;gap:14px;margin:0;padding:0;list-style:none}
+.sh-nw li{width:60px;text-align:center;font-size:12px;color:var(--muted)}
+.sh-nw button,.sh-nw .add{display:grid;place-items:center;width:52px;height:52px;margin:0 auto 5px;border-radius:50%;background:var(--blue-bg);color:var(--blue)}
+.sh-nw .add{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.sh-emp{margin:0;font-size:13px;line-height:1.4;color:var(--muted)}
+.sh-emp a{color:var(--blue)}
+.sh-more{display:flex;align-items:center;gap:10px;width:100%;margin-top:14px;padding-top:12px!important;border-top:1px solid var(--line)!important;font-size:14px;text-align:left}
+.sh-more span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--blue-bg);color:var(--blue)}
+.sh-st{min-height:16px;margin:8px 0 0;text-align:center;font-size:12px;color:var(--muted)}
