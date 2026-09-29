@@ -89,6 +89,7 @@ export const FEED: FeedItem[] = [
     job: "Entrepreneur",
     title: "Les 3 habitudes qui changent une activité",
     description: "Un partage simple pour mieux organiser son travail et avancer chaque semaine.",
+    more: "Découvre trois habitudes simples pour mieux structurer tes journées, prioriser tes tâches et suivre tes progrès semaine après semaine.",
     publishedAt: hoursAgo(1),
     comments: 8,
     likes: 42,
