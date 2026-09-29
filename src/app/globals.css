@@ -200,3 +200,52 @@ button:disabled{cursor:default}
 @media (max-width:759px){
 .chat-panel{min-height:520px}
 }
+/* Profil V0.1.8 */
+.profile-page{padding-bottom:90px}
+.profile-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.profile-icon-button{position:relative;width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.profile-icon-button:hover{border-color:var(--blue);color:var(--blue)}
+.notification-dot{position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--blue);border:1px solid var(--surface)}
+.profile-content{padding:8px 16px 100px;display:grid;gap:16px}
+.profile-hero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:13px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.profile-avatar{width:58px;height:58px;border-radius:17px;background:linear-gradient(135deg,var(--blue),var(--accent-bg));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}
+.profile-identity{min-width:0}
+.profile-label{display:block;color:var(--blue);font-size:9px;font-weight:800;letter-spacing:.1em;margin-bottom:4px}
+.profile-identity h2{font-size:17px;line-height:1.2;margin:0 0 4px}
+.profile-identity p{margin:0;color:var(--muted);font-size:11px;line-height:1.4}
+.profile-edit{border:1px solid var(--blue);background:transparent;color:var(--blue);border-radius:10px;padding:8px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+.profile-edit:hover{background:var(--blue);color:#fff}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
+.profile-stats>div{display:grid;gap:3px;text-align:center;padding:14px 8px}
+.profile-stats>div+div{border-left:1px solid var(--line)}
+.profile-stats strong{font-size:19px;line-height:1}
+.profile-stats span{color:var(--muted);font-size:10px;line-height:1.3}
+.profile-section{display:grid;gap:10px}
+.profile-section-heading{display:flex;align-items:end;justify-content:space-between;padding:0 2px}
+.profile-section-heading .eyebrow{margin:0 0 3px}
+.profile-section-heading h2{font-size:17px;line-height:1.2;margin:0}
+.profile-reading-card{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.profile-reading-icon{width:38px;height:38px;border-radius:11px;background:var(--accent-bg);color:var(--blue);display:flex;align-items:center;justify-content:center}
+.profile-reading-card>div:last-child{min-width:0;display:grid;gap:5px}
+.profile-reading-card strong{font-size:13px;line-height:1.35}
+.profile-reading-card span{color:var(--muted);font-size:10px}
+.profile-progress{height:5px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:2px}
+.profile-progress span{display:block;height:100%;background:var(--blue);border-radius:999px}
+.profile-list{display:grid;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
+.profile-list-item{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;padding:13px 14px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);text-align:left}
+.profile-list-item:last-child{border-bottom:0}
+.profile-list-item:hover{background:var(--bg)}
+.profile-list-icon{width:34px;height:34px;border-radius:10px;background:var(--accent-bg);color:var(--blue);display:flex;align-items:center;justify-content:center}
+.profile-list-item>span:nth-child(2){display:grid;gap:3px;min-width:0}
+.profile-list-item strong{font-size:12px}
+.profile-list-item small{color:var(--muted);font-size:10px;line-height:1.3}
+.profile-list-item>b{color:var(--muted);font-size:19px;font-weight:400}
+@media (min-width:760px){
+.profile-content{max-width:760px;margin:0 auto}
+.profile-hero{padding:20px}
+.profile-stats>div{padding:16px}
+}
+@media (max-width:420px){
+.profile-hero{grid-template-columns:auto minmax(0,1fr);}
+.profile-edit{grid-column:2;justify-self:start}
+}
