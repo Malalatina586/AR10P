@@ -42,10 +42,14 @@ function usePersistentState<V>(key: string, initial: V) {
   const [value, setValue] = useState<V>(initial);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(key);
-      if (saved !== null) setValue(JSON.parse(saved));
-    } catch { /* stockage indisponible : valeur par défaut */ }
+    const id = window.setTimeout(() => {
+      try {
+        const saved = localStorage.getItem(key);
+        if (saved !== null) setValue(JSON.parse(saved));
+      } catch { /* stockage indisponible : valeur par défaut */ }
+    }, 0);
+
+    return () => window.clearTimeout(id);
   }, [key]);
 
   const set = useCallback((next: V | ((prev: V) => V)) => {
@@ -78,11 +82,15 @@ export function useTheme() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    setDark(document.documentElement.dataset.theme === 'dark');
+    const id = window.setTimeout(() => {
+      setDark(document.documentElement.dataset.theme === "dark");
+    }, 0);
+
+    return () => window.clearTimeout(id);
   }, []);
 
   function toggleDark() {
-    const next = dark ? 'light' : 'dark';
+    const next = dark ? "light" : "dark";
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem(THEME_KEY, next); } catch { /* ignoré */ }
     setDark(!dark);
@@ -97,11 +105,12 @@ export async function copyLink(url: string) {
 }
 
 /** Ouvre le partage du réseau, ou copie le lien si le réseau n'a pas de lien de partage web. */
-export async function shareTo(network: Network, url: string, title: string): Promise<'opened' | 'copied'> {
+export async function shareTo(network: Network, url: string, title: string): Promise<"opened" | "copied"> {
   if (network.shareUrl) {
-    window.open(network.shareUrl(url, `${title} — résumé en 10 pages`), '_blank', 'noopener,noreferrer');
-    return 'opened';
+    window.open(network.shareUrl(url, title), "_blank", "noopener,noreferrer");
+    return "opened";
   }
+
   await copyLink(url);
-  return 'copied';
+  return "copied";
 }

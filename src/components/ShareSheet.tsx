@@ -24,7 +24,7 @@ export function ShareSheet({ open, onClose, title, url }: Props) {
 
   // Ferme avec Échap
   useEffect(() => {
-    if (!open) { setToast(null); return; }
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -94,7 +94,7 @@ export function ShareSheet({ open, onClose, title, url }: Props) {
         )}
 
         <button className="sh-more" onClick={handleMore}>
-          <span><Ellipsis size={17} /></span> Plus d'options
+          <span><Ellipsis size={17} /></span> Plus d&apos;options
         </button>
 
         <p role="status" className="sh-st">{toast && toast !== 'Lien copié' ? toast : ''}</p>
