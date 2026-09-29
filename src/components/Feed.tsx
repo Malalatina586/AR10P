@@ -5,7 +5,6 @@ import { CATEGORIES, FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
 import FeedCard from "./FeedCard";
 import { IconBell, IconSearch } from "./Icons";
 import BottomNav from "./BottomNav";
-import ThemeToggle from "./ThemeToggle";
 
 // Recherche tolérante aux accents et à la casse
 const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -30,7 +29,6 @@ export default function Feed() {
         <div className="head-row">
           <h1 className="logo">AR10P</h1>
           <div className="head-actions">
-            <ThemeToggle />
             <button className="icon-btn" aria-label="Alertes (bientôt)" title="Alertes — bientôt"><IconBell /></button>
           </div>
         </div>
