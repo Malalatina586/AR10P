@@ -41,6 +41,7 @@ export type SponsoredItem = Base & {
   type: "sponsored";
   category: Category;
   sponsor: string;
+  avatar?: string;
   place: string;
   cta: string;
 };
@@ -49,6 +50,7 @@ export type CreatorItem = Base & {
   type: "creator";
   category: Category;
   creator: string;
+  avatar?: string;
   job: string;
   downloads: number;
 };

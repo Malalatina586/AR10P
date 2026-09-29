@@ -7,6 +7,25 @@ import { IconBookmark, IconClock, IconDownload, IconHeart, IconMessage, IconShar
 
 const initials = (name: string) => name.split(/[\s.]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
+function ProfileAvatar({ name, avatar, tone }: { name: string; avatar?: string; tone: "blue" | "green" | "amber" }) {
+  const [open, setOpen] = useState(false);
+  if (!avatar) return <div className={`avatar avatar-${tone}`}>{initials(name)}</div>;
+  return (
+    <>
+      <button type="button" className={`avatar avatar-${tone} avatar-photo`} onClick={() => setOpen(true)} aria-label={`Agrandir la photo de profil de ${name}`}>
+        <Image src={avatar} alt="" width={44} height={44} />
+      </button>
+      {open && (
+        <div className="media-lightbox" onClick={() => setOpen(false)} role="dialog" aria-modal="true" aria-label={`Photo de profil de ${name}`}>
+          <div className="profile-lightbox-frame" onClick={(e) => e.stopPropagation()}>
+            <Image src={avatar} alt="" fill sizes="80vw" className="profile-lightbox-image" />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // Placeholder tant que l'authentification (Supabase) n'est pas branchée.
 // Une fois les comptes en place, ceci ouvrira la fenêtre de connexion/inscription
 // au lieu de cette alerte, sans changer le reste du composant.
@@ -110,7 +129,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     return (
       <article className="post post-sponsored">
         <header className="post-head">
-          <div className="avatar avatar-amber">{initials(item.sponsor)}</div>
+          <ProfileAvatar name={item.sponsor} avatar={item.avatar} tone="amber" />
           <div className="who"><strong>{item.sponsor}</strong><span>{item.place}</span></div>
           <span className="badge badge-amber">Sponsorisé</span>
         </header>
@@ -125,7 +144,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     return (
       <article className="post">
         <header className="post-head">
-          <div className="avatar avatar-green">{initials(item.creator)}</div>
+          <ProfileAvatar name={item.creator} avatar={item.avatar} tone="green" />
           <div className="who"><strong>{item.creator}</strong><span>{item.job} · {timeAgo(item.publishedAt)}</span></div>
           <span className="badge badge-green">Créateur</span>
         </header>

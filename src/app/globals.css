@@ -338,3 +338,32 @@ button:disabled{cursor:default}
   border-radius:14px;
 }
 
+
+/* AR10P — Photos de profil cliquables */
+.avatar-photo{
+  position:relative;
+  overflow:hidden;
+  padding:0;
+  border:0;
+  cursor:pointer;
+}
+
+.avatar-photo img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+
+.profile-lightbox-frame{
+  position:relative;
+  width:min(80vw, 420px);
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  border-radius:50%;
+}
+
+.profile-lightbox-image{
+  object-fit:cover;
+  border-radius:50%;
+}
