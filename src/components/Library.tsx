@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useMemo, useState } from "react";
 import { FEED, LIBRARY, type LibraryStatus } from "@/lib/mock-data";
@@ -101,9 +102,9 @@ export default function Library() {
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">
-        <a className="tab" href="/" aria-label="Fil">
+        <Link className="tab" href="/" aria-label="Fil">
           <IconSmartHome />
-        </a>
+        </Link>
         <button
           className="tab"
           disabled

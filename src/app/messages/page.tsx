@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useMemo, useState } from "react";
 import {
@@ -279,9 +280,9 @@ export default function MessagesPage() {
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">
-        <a className="tab" href="/" aria-label="Fil">
+        <Link className="tab" href="/" aria-label="Fil">
           <IconSmartHome />
-        </a>
+        </Link>
 
         <button className="tab active" aria-current="page" aria-label="Messages">
           <IconMessages />

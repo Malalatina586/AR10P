@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link';
 
 import { useState } from "react";
 import {
@@ -164,9 +165,9 @@ export default function ProfilPage() {
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">
-        <a className="tab" href="/" aria-label="Fil">
+        <Link className="tab" href="/" aria-label="Fil">
           <IconSmartHome />
-        </a>
+        </Link>
 
         <a className="tab" href="/messages" aria-label="Messages">
           <IconMessages />

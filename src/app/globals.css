@@ -249,3 +249,30 @@ button:disabled{cursor:default}
 .profile-hero{grid-template-columns:auto minmax(0,1fr);}
 .profile-edit{grid-column:2;justify-self:start}
 }
+
+/* Profil V0.1.9 — édition */
+.profile-edit-panel{
+  grid-column:1 / -1;
+  display:grid;
+  gap:7px;
+  padding-top:4px;
+}
+.profile-edit-panel label{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+}
+.profile-edit-panel input{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--bg);
+  color:var(--text);
+  padding:10px 12px;
+  outline:0;
+  font:inherit;
+  font-size:13px;
+}
+.profile-edit-panel input:focus{
+  border-color:var(--blue);
+}
