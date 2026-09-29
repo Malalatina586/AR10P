@@ -73,7 +73,7 @@ export const CATEGORIES: Category[] = [
 
 ];
 
-export const SHOW_SPONSORED_AND_CREATOR = false;
+export const SHOW_SPONSORED_AND_CREATOR = true;
 
 const hoursAgo = (h: number) =>
   new Date(Date.now() - h * 3600_000).toISOString();
