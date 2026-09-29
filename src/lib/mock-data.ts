@@ -30,6 +30,11 @@ export type SummaryItem = Base & {
   category: Category;
   readingMinutes: number;
   author: string;
+  media?: {
+    type: "image" | "video";
+    url: string;
+    ratio: "square" | "portrait";
+  };
 };
 
 export type SponsoredItem = Base & {
@@ -77,6 +82,12 @@ export const FEED: FeedItem[] = [
     type: "summary",
     category: "Business",
     author: "AR10P",
+    media: {
+      type: "image",
+      url:
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
+      ratio: "square",
+    },
     title: "Père riche, père pauvre : l'essentiel",
     description:
       "Les 7 idées clés sur l'argent et les actifs, avec 3 actions à appliquer cette semaine.",
@@ -91,6 +102,12 @@ export const FEED: FeedItem[] = [
     type: "summary",
     category: "Tech",
     author: "AR10P",
+    media: {
+      type: "image",
+      url:
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
+    ratio: "portrait",
+    },
     title: "L'intelligence artificielle en 10 pages",
     description:
       "Comprendre ce que l'IA sait faire, ses limites et comment l'utiliser dès aujourd'hui.",

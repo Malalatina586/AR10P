@@ -276,3 +276,65 @@ button:disabled{cursor:default}
 .profile-edit-panel input:focus{
   border-color:var(--blue);
 }
+/* AR10P — Formats média officiels du Feed */
+.feed-media{
+  width:100%;
+  overflow:hidden;
+  border-radius:14px;
+}
+
+.feed-media-square{
+  aspect-ratio:1 / 1;
+}
+
+.feed-media-portrait{
+  aspect-ratio:4 / 5;
+}
+
+.feed-media img,
+.feed-media video{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+
+/* AR10P — Agrandissement des médias */
+.feed-media{
+  border:0;
+  padding:0;
+  background:none;
+  cursor:pointer;
+}
+
+.media-lightbox{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.86);
+}
+
+.media-lightbox-frame{
+  position:relative;
+  overflow:hidden;
+}
+
+.media-lightbox-square{
+  width:min(90vw, 90vh);
+  aspect-ratio:1 / 1;
+}
+
+.media-lightbox-portrait{
+  width:min(90vw, 72vh);
+  aspect-ratio:4 / 5;
+}
+
+.media-lightbox-image{
+  object-fit:cover;
+  border-radius:14px;
+}
+

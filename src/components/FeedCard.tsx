@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { FeedItem, timeAgo } from "@/lib/mock-data";
 import { IconBookmark, IconClock, IconDownload, IconHeart, IconMessage, IconShare } from "./Icons";
@@ -13,7 +14,46 @@ function requireAccount(action: string) {
   window.alert(`Crée un compte gratuit pour ${action}.`);
 }
 
-function Tile({ tone }: { tone: "blue" | "green" }) {
+function MediaTile({ item, tone }: { item: FeedItem; tone: "blue" | "green" }) {
+  const [open, setOpen] = useState(false);
+
+  if (item.type === "summary" && item.media?.type === "image") {
+    return (
+      <>
+        <button
+          type="button"
+          className={`feed-media feed-media-${item.media.ratio}`}
+          onClick={() => setOpen(true)}
+          aria-label="Agrandir l’image"
+        >
+          <Image src={item.media.url} alt="" width={1080} height={1350} />
+        </button>
+
+        {open && (
+          <div
+            className="media-lightbox"
+            onClick={() => setOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Image agrandie"
+          >
+            <div
+              className={`media-lightbox-frame media-lightbox-${item.media.ratio}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={item.media.url}
+                alt=""
+                fill
+                sizes="92vw"
+                className="media-lightbox-image"
+              />
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
   return (
     <div className={`tile tile-${tone}`} aria-hidden="true">
       <b>10</b>
@@ -90,7 +130,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
           <span className="badge badge-green">Créateur</span>
         </header>
         <div className="post-body">
-          <Tile tone="green" />
+          <MediaTile item={item} tone="green" />
           <div>
             <h2 className="post-title">{item.title}</h2>
             <ExpandableText description={item.description} more={item.more} />
@@ -108,7 +148,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
         <div className="who"><strong>AR10P</strong><span>{timeAgo(item.publishedAt)} · {item.category}</span></div>
       </header>
       <div className="post-body">
-        <Tile tone="blue" />
+        <MediaTile item={item} tone="blue" />
         <div>
           <h2 className="post-title">{item.title}</h2>
           <ExpandableText description={item.description} more={item.more} />
