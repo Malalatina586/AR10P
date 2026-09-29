@@ -55,7 +55,7 @@ export default function Feed() {
 
       <nav className="tabbar" aria-label="Navigation principale">
         <button className="tab active" aria-current="page" aria-label="Fil"><IconSmartHome /></button>
-        <button className="tab" disabled title="Bientôt" aria-label="Messages (bientôt)"><IconMessages size={24} /></button>
+        <a className="tab" href="/messages" aria-label="Messages"><IconMessages size={24} /></a>
         <a className="tab" href="/bibliotheque" aria-label="Bibliothèque"><IconStackPlus /></a>
         <button className="tab" disabled title="Bientôt — nécessite un compte" aria-label="Profil (bientôt)"><IconUserTabler size={24} /></button>
       </nav>
