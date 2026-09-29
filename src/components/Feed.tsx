@@ -42,7 +42,6 @@ export default function Feed() {
         ) : (
           items.map((item) => <FeedCard key={item.id} item={item} />)
         )}
-        <p className="feed-end"><a href="/a-propos">À propos d&apos;AR10P</a></p>
       </main>
 
         <BottomNav />
