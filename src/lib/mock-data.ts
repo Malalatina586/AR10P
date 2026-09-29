@@ -80,6 +80,21 @@ const hoursAgo = (h: number) =>
 
 export const FEED: FeedItem[] = [
   {
+    id: "c1",
+    type: "creator",
+    category: "Business",
+    creator: "Andry Rakoto",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    job: "Entrepreneur",
+    title: "Les 3 habitudes qui changent une activité",
+    description: "Un partage simple pour mieux organiser son travail et avancer chaque semaine.",
+    publishedAt: hoursAgo(1),
+    comments: 8,
+    likes: 42,
+    shares: 12,
+    downloads: 27,
+  },
+  {
     id: "s1",
     type: "summary",
     category: "Business",
