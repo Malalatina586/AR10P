@@ -3,7 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import { CATEGORIES, FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
 import FeedCard from "./FeedCard";
-import { IconBell, IconSmartHome, IconStackPlus, IconMessages, IconSearch, IconUserTabler } from "./Icons";
+import { IconBell, IconSearch } from "./Icons";
+import BottomNav from "./BottomNav";
 import ThemeToggle from "./ThemeToggle";
 
 // Recherche tolérante aux accents et à la casse
@@ -53,12 +54,7 @@ export default function Feed() {
         <p className="feed-end"><a href="/a-propos">À propos d&apos;AR10P</a></p>
       </main>
 
-      <nav className="tabbar" aria-label="Navigation principale">
-        <button className="tab active" aria-current="page" aria-label="Fil"><IconSmartHome /></button>
-        <a className="tab" href="/messages" aria-label="Messages"><IconMessages size={24} /></a>
-        <a className="tab" href="/bibliotheque" aria-label="Bibliothèque"><IconStackPlus /></a>
-        <a className="tab" href="/profil" aria-label="Profil"><IconUserTabler size={24} /></a>
-      </nav>
+        <BottomNav />
     </div>
   );
 }

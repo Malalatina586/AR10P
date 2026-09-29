@@ -1,9 +1,8 @@
 "use client";
-import Link from "next/link";
 
 import { useMemo, useState } from "react";
 import { FEED, LIBRARY, type LibraryStatus } from "@/lib/mock-data";
-import { IconSmartHome, IconStackPlus } from "./Icons";
+import BottomNav from "./BottomNav";
 
 type Filter = "all" | LibraryStatus;
 
@@ -101,34 +100,7 @@ export default function Library() {
         )}
       </main>
 
-      <nav className="tabbar" aria-label="Navigation principale">
-        <Link className="tab" href="/" aria-label="Fil">
-          <IconSmartHome />
-        </Link>
-        <button
-          className="tab"
-          disabled
-          title="Bientôt"
-          aria-label="Messages (bientôt)"
-        >
-          <span aria-hidden="true">💬</span>
-        </button>
-        <button
-          className="tab active"
-          aria-current="page"
-          aria-label="Bibliothèque"
-        >
-          <IconStackPlus />
-        </button>
-        <button
-          className="tab"
-          disabled
-          title="Bientôt — nécessite un compte"
-          aria-label="Profil (bientôt)"
-        >
-          <span aria-hidden="true">👤</span>
-        </button>
-      </nav>
+        <BottomNav />
     </div>
   );
 }

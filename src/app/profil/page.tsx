@@ -1,6 +1,5 @@
 'use client';
 import { useState } from "react";
-import Link from "next/link";
 
 /**
  * AR10P — Page Profil
@@ -23,12 +22,7 @@ import {
 
 import { CATEGORIES } from '@/lib/mock-data';
 
-import {
-  IconSmartHome,
-  IconMessages,
-  IconStackPlus,
-  IconUserTabler,
-} from '@/components/Icons';
+import BottomNav from "@/components/BottomNav";
 
 import './profil.css';
 
@@ -243,20 +237,7 @@ export default function ProfilPage() {
       </p>
 
       {/* Navigation principale AR10P */}
-      <nav className="pf-tabbar" aria-label="Navigation principale">
-        <Link className="pf-tab" href="/" aria-label="Fil">
-          <IconSmartHome />
-        </Link>
-        <a className="pf-tab" href="/messages" aria-label="Messages">
-          <IconMessages size={24} />
-        </a>
-        <a className="pf-tab" href="/bibliotheque" aria-label="Bibliothèque">
-          <IconStackPlus />
-        </a>
-        <a className="pf-tab active" href="/profil" aria-label="Profil" aria-current="page">
-          <IconUserTabler size={24} />
-        </a>
-      </nav>
+        <BottomNav />
     </main>
   );
 }

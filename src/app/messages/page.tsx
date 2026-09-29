@@ -1,7 +1,6 @@
 "use client";
-import Link from "next/link";
-
 import { useMemo, useState } from "react";
+import BottomNav from "@/components/BottomNav";
 import {
   IconBell,
   IconBookmark,
@@ -9,10 +8,6 @@ import {
   IconMessage,
   IconSearch,
   IconSend,
-  IconSmartHome,
-  IconStackPlus,
-  IconUserTabler,
-  IconMessages,
 } from "@/components/Icons";
 
 type Conversation = {
@@ -279,28 +274,7 @@ export default function MessagesPage() {
         </section>
       </main>
 
-      <nav className="tabbar" aria-label="Navigation principale">
-        <Link className="tab" href="/" aria-label="Fil">
-          <IconSmartHome />
-        </Link>
-
-        <button className="tab active" aria-current="page" aria-label="Messages">
-          <IconMessages />
-        </button>
-
-        <a className="tab" href="/bibliotheque" aria-label="Bibliothèque">
-          <IconStackPlus />
-        </a>
-
-        <button
-          className="tab"
-          disabled
-          title="Bientôt — nécessite un compte"
-          aria-label="Profil (bientôt)"
-        >
-          <IconUserTabler />
-        </button>
-      </nav>
+        <BottomNav />
     </div>
   );
 }
