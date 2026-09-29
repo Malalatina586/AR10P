@@ -134,7 +134,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
           <span className="badge badge-amber">Sponsorisé</span>
         </header>
         <h2 className="post-title">{item.title}</h2>
-        <p className="post-desc">{item.description}</p>
+        <ExpandableText description={item.description} more={item.more} />
         <a className="cta" href="#">{item.cta} →</a>
       </article>
     );

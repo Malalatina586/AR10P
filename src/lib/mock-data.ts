@@ -110,6 +110,7 @@ export const FEED: FeedItem[] = [
     title: "Père riche, père pauvre : l'essentiel",
     description:
       "Les 7 idées clés sur l'argent et les actifs, avec 3 actions à appliquer cette semaine.",
+    more: "Un aperçu plus détaillé des notions d actifs, de revenus et de gestion de l argent, présenté de manière simple et pratique.",
     readingMinutes: 6,
     publishedAt: hoursAgo(2),
     comments: 0,
@@ -130,6 +131,7 @@ export const FEED: FeedItem[] = [
     title: "L'intelligence artificielle en 10 pages",
     description:
       "Comprendre ce que l'IA sait faire, ses limites et comment l'utiliser dès aujourd'hui.",
+    more: "Une lecture approfondie pour comprendre les usages de l IA, ses limites et les bonnes pratiques pour commencer.",
     readingMinutes: 7,
     publishedAt: hoursAgo(9),
     comments: 0,
@@ -144,6 +146,7 @@ export const FEED: FeedItem[] = [
     title: "Les grands empires d'Afrique : l'essentiel",
     description:
       "Mali, Songhaï, Éthiopie… les repères pour comprendre cinq siècles d'histoire.",
+    more: "Un complément pour situer les grands empires africains, leurs périodes, leurs territoires et leur héritage.",
     readingMinutes: 8,
     publishedAt: hoursAgo(30),
     comments: 0,
@@ -158,6 +161,7 @@ export const FEED: FeedItem[] = [
     title: "Épargner et investir : par où commencer ?",
     description:
       "Budget, fonds d'urgence, premiers placements : un plan simple en 4 étapes.",
+    more: "Un aperçu plus détaillé des notions d actifs, de revenus et de gestion de l argent, présenté de manière simple et pratique.",
     readingMinutes: 6,
     publishedAt: hoursAgo(52),
     comments: 0,
@@ -183,9 +187,9 @@ export const FEED: FeedItem[] = [
     type: "summary",
     category: "IA & Technologie",
     author: "AR10P",
-    title: "L'IA générative en 10 pages",
-    description:
-      "Comprendre les modèles génératifs, leurs usages et les limites à connaître.",
+    title: "L intelligence artificielle générative en 10 pages",
+    description: "Comprendre les modèles génératifs, leurs usages et les limites à connaître.",
+    more: "Un complément pour découvrir comment fonctionnent les modèles génératifs, leurs usages concrets et leurs principales limites.",
     readingMinutes: 7,
     publishedAt: hoursAgo(12),
     comments: 0,
@@ -200,6 +204,7 @@ export const FEED: FeedItem[] = [
     title: "Construire de meilleures habitudes",
     description:
       "Les principes essentiels pour transformer une intention en routine durable.",
+    more: "Un aperçu plus détaillé des notions d actifs, de revenus et de gestion de l argent, présenté de manière simple et pratique.",
     readingMinutes: 6,
     publishedAt: hoursAgo(18),
     comments: 0,
@@ -214,6 +219,7 @@ export const FEED: FeedItem[] = [
     title: "Mieux comprendre le sommeil",
     description:
       "Les bases du sommeil, les habitudes qui peuvent l'améliorer et les idées reçues.",
+    more: "Un aperçu plus détaillé des notions d actifs, de revenus et de gestion de l argent, présenté de manière simple et pratique.",
     readingMinutes: 6,
     publishedAt: hoursAgo(22),
     comments: 0,
@@ -228,6 +234,7 @@ export const FEED: FeedItem[] = [
     author: "AR10P",
     title: "Comprendre l actualité mondiale",
     description: "Les grands événements mondiaux expliqués simplement.",
+    more: "Un aperçu plus détaillé des notions d actifs, de revenus et de gestion de l argent, présenté de manière simple et pratique.",
     readingMinutes: 6,
     publishedAt: hoursAgo(4),
     comments: 0,
@@ -240,6 +247,7 @@ export const FEED: FeedItem[] = [
     category: "Sport",
     author: "AR10P",
     title: "Le sport moderne en 10 pages",
+    more: "Un complément pour mieux comprendre l économie du sport, son évolution et les principaux enjeux actuels.",
     description: "Les grands enjeux du sport moderne, son économie et son évolution.",
     readingMinutes: 5,
     publishedAt: hoursAgo(6),
@@ -267,6 +275,7 @@ export const FEED: FeedItem[] = [
     author: "AR10P",
     title: "Apprendre plus efficacement",
     description: "Des principes simples pour mieux mémoriser et développer ses compétences.",
+    more: "Un aperçu plus détaillé des notions d actifs, de revenus et de gestion de l argent, présenté de manière simple et pratique.",
     readingMinutes: 6,
     publishedAt: hoursAgo(10),
     comments: 0,
@@ -279,6 +288,7 @@ export const FEED: FeedItem[] = [
     category: "Climat, Énergie & Futur",
     author: "AR10P",
     title: "Comprendre la transition énergétique",
+    more: "Un complément pour comprendre les principales sources d énergie, leurs enjeux et les évolutions possibles.",
     description: "Les grandes sources d énergie et les transformations à venir.",
     readingMinutes: 7,
     publishedAt: hoursAgo(12),
