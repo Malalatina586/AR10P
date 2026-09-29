@@ -36,6 +36,24 @@ function requireAccount(action: string) {
 function MediaTile({ item, tone }: { item: FeedItem; tone: "blue" | "green" }) {
   const [open, setOpen] = useState(false);
 
+  if (item.media?.type === "video") {
+    return (
+      <>
+        <button type="button" className={`feed-media feed-media-${item.media.ratio} feed-video-thumb`} onClick={() => setOpen(true)} aria-label="Lire la vidéo">
+          <video src={item.media.url} muted playsInline preload="metadata" aria-hidden="true" />
+          <span className="video-play" aria-hidden="true">▶</span>
+        </button>
+        {open && (
+          <div className="media-lightbox" onClick={() => setOpen(false)} role="dialog" aria-modal="true" aria-label="Lecteur vidéo">
+            <div className={`media-lightbox-frame media-lightbox-${item.media.ratio}`} onClick={(e) => e.stopPropagation()}>
+              <video src={item.media.url} controls autoPlay playsInline className="media-lightbox-video" />
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+
   if (item.type === "summary" && item.media?.type === "image") {
     return (
       <>
@@ -145,7 +163,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
       <article className="post">
         <header className="post-head">
           <ProfileAvatar name={item.creator} avatar={item.avatar} tone="green" />
-          <div className="who"><strong>{item.creator}</strong><span>{item.job} · {timeAgo(item.publishedAt)}</span></div>
+          <div className="who"><strong>{item.creator}</strong><span suppressHydrationWarning>{item.job} · {timeAgo(item.publishedAt)}</span></div>
           <span className="badge badge-green">Créateur</span>
         </header>
         <div className="post-body">
@@ -164,7 +182,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     <article className="post">
       <header className="post-head">
         <ProfileAvatar name="AR10P" avatar="/logo.png" tone="blue" />
-        <div className="who"><strong>AR10P</strong><span>{timeAgo(item.publishedAt)} · {item.category}</span></div>
+        <div className="who"><strong>AR10P</strong><span suppressHydrationWarning>{timeAgo(item.publishedAt)} · {item.category}</span></div>
       </header>
       <div className="post-body">
         <MediaTile item={item} tone="blue" />

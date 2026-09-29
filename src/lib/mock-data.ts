@@ -54,6 +54,11 @@ export type CreatorItem = Base & {
   avatar?: string;
   job: string;
   downloads: number;
+  media?: {
+    type: "image" | "video";
+    url: string;
+    ratio: "square" | "portrait";
+  };
 };
 
 export type FeedItem = SummaryItem | SponsoredItem | CreatorItem;
@@ -96,6 +101,28 @@ export const FEED: FeedItem[] = [
     shares: 12,
     downloads: 27,
   },
+  {
+    id: "c2",
+    type: "creator",
+    category: "Business",
+    creator: "Andry Rakoto",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    job: "Entrepreneur",
+    title: "Comment mieux organiser son activité ?",
+    description: "Une courte vidéo avec trois conseils pratiques pour mieux organiser son activité.",
+    more: "Dans cette vidéo, Andry partage trois méthodes simples pour mieux structurer son travail au quotidien.",
+    publishedAt: hoursAgo(2),
+    comments: 6,
+    likes: 31,
+    shares: 9,
+    downloads: 18,
+    media: {
+      type: "video",
+      url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      ratio: "portrait",
+    },
+  },
+
   {
     id: "s1",
     type: "summary",

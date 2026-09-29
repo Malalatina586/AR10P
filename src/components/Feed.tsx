@@ -18,7 +18,6 @@ export default function Feed() {
     return FEED
       .filter((i) => SHOW_SPONSORED_AND_CREATOR || i.type === "summary")
       .filter((i) => !q || norm(`${i.title} ${i.description} ${i.category}`).includes(q))
-      .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)); // derniers ajouts d'abord
   }, [query]);
 
   return (
