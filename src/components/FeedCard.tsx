@@ -163,7 +163,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
   return (
     <article className="post">
       <header className="post-head">
-        <div className="avatar avatar-blue">AR</div>
+        <ProfileAvatar name="AR10P" avatar="/logo.png" tone="blue" />
         <div className="who"><strong>AR10P</strong><span>{timeAgo(item.publishedAt)} · {item.category}</span></div>
       </header>
       <div className="post-body">

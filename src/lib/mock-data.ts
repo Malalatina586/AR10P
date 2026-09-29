@@ -26,6 +26,7 @@ type Base = {
 };
 
 export type SummaryItem = Base & {
+  avatar?: string;
   type: "summary";
   category: Category;
   readingMinutes: number;
