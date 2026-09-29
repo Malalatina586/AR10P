@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { CATEGORIES, FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
+import { FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
 import FeedCard from "./FeedCard";
 import { IconBell, IconSearch } from "./Icons";
 import BottomNav from "./BottomNav";
@@ -11,17 +11,15 @@ const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").t
 
 export default function Feed() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string>("Tous");
   const searchRef = useRef<HTMLInputElement>(null);
 
   const items = useMemo(() => {
     const q = norm(query.trim());
     return FEED
       .filter((i) => SHOW_SPONSORED_AND_CREATOR || i.type === "summary")
-      .filter((i) => category === "Tous" || i.category === category)
       .filter((i) => !q || norm(`${i.title} ${i.description} ${i.category}`).includes(q))
       .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)); // derniers ajouts d'abord
-  }, [query, category]);
+  }, [query]);
 
   return (
     <div className="app">
@@ -36,16 +34,11 @@ export default function Feed() {
           <IconSearch />
           <input ref={searchRef} type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un sujet que vous aimez" aria-label="Rechercher un sujet" />
         </label>
-        <div className="chips" role="tablist" aria-label="Catégories">
-          {["Tous", ...CATEGORIES].map((c) => (
-            <button key={c} role="tab" aria-selected={category === c} className={`chip${category === c ? " active" : ""}`} onClick={() => setCategory(c)}>{c}</button>
-          ))}
-        </div>
       </header>
 
       <main className="feed">
         {items.length === 0 ? (
-          <p className="empty">Aucun résumé pour « {query || category} » pour l&apos;instant.</p>
+          <p className="empty">Aucun résumé pour « {query} » pour l&apos;instant.</p>
         ) : (
           items.map((item) => <FeedCard key={item.id} item={item} />)
         )}
