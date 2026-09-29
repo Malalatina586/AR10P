@@ -262,3 +262,20 @@ export function timeAgo(iso: string): string {
 
   return `Il y a ${Math.floor(h / 24)} j`;
 }
+
+export type LibraryStatus = "saved" | "in-progress" | "completed";
+
+export type LibraryItem = {
+  summaryId: string;
+  status: LibraryStatus;
+  progress: number;
+};
+
+export const LIBRARY: LibraryItem[] = [
+  { summaryId: "s2", status: "in-progress", progress: 60 },
+  { summaryId: "s1", status: "completed", progress: 100 },
+  { summaryId: "s4", status: "saved", progress: 0 },
+  { summaryId: "s6", status: "in-progress", progress: 35 },
+  { summaryId: "s3", status: "completed", progress: 100 },
+];
+
