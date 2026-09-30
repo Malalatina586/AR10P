@@ -61,6 +61,8 @@ export type CreatorItem = Base & {
   };
 };
 
+export type CreatorProfile = { username: string; creator: string; avatar?: string; job: string; category: Category; location?: string; bio: string; stats: { publications: number; followers: number; likes: number; comments: number; shares: number; downloads: number; }; };
+
 export type FeedItem = SummaryItem | SponsoredItem | CreatorItem;
 
 export const CATEGORIES: Category[] = [
@@ -84,6 +86,7 @@ export const SHOW_SPONSORED_AND_CREATOR = true;
 const hoursAgo = (h: number) =>
   new Date(Date.now() - h * 3600_000).toISOString();
 
+export const CREATOR_PROFILES: CreatorProfile[] = [{ username: "andry.rakoto", creator: "Andry Rakoto", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e", job: "Entrepreneur", category: "Business", location: "Antananarivo, Madagascar", bio: "Entrepreneur et créateur de contenus. Je partage des méthodes simples pour mieux organiser son activité, développer ses compétences et passer à l’action.", stats: { publications: 24, followers: 1284, likes: 8642, comments: 327, shares: 184, downloads: 96 } }];
 export const FEED: FeedItem[] = [
   {
     id: "c1",

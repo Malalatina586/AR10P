@@ -36,7 +36,7 @@ function requireAccount(action: string) {
 function MediaTile({ item, tone }: { item: FeedItem; tone: "blue" | "green" }) {
   const [open, setOpen] = useState(false);
 
-  if (item.media?.type === "video") {
+  if (item.type === "creator" && item.media?.type === "video") {
     return (
       <>
         <button type="button" className={`feed-media feed-media-${item.media.ratio} feed-video-thumb`} onClick={() => setOpen(true)} aria-label="Lire la vidéo">
