@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import Image from "next/image";
 import { useState } from "react";
@@ -163,7 +164,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
       <article className="post">
         <header className="post-head">
           <ProfileAvatar name={item.creator} avatar={item.avatar} tone="green" />
-          <div className="who"><strong>{item.creator}</strong><span suppressHydrationWarning>{item.job} · {timeAgo(item.publishedAt)}</span></div>
+          <div className="who"><strong><Link href={`/createur/${item.creator === "Andry Rakoto" ? "andry.rakoto" : ""}`}>{item.creator}</Link></strong><span suppressHydrationWarning>{item.job} · {timeAgo(item.publishedAt)}</span></div>
           <span className="badge badge-green">Créateur</span>
         </header>
         <div className="post-body">
