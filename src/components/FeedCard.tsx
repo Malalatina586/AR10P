@@ -34,7 +34,7 @@ function requireAccount(action: string) {
   window.alert(`Crée un compte gratuit pour ${action}.`);
 }
 
-function MediaTile({ item, tone }: { item: FeedItem; tone: "blue" | "green" }) {
+function MediaTile({ item, tone }: { item: FeedItem; tone: "blue" | "green" | "amber" }) {
   const [open, setOpen] = useState(false);
 
   if (item.type === "creator" && item.media?.type === "video") {
@@ -55,7 +55,7 @@ function MediaTile({ item, tone }: { item: FeedItem; tone: "blue" | "green" }) {
     );
   }
 
-  if (item.type === "summary" && item.media?.type === "image") {
+  if ((item.type === "summary" || item.type === "sponsored") && item.media?.type === "image") {
     return (
       <>
         <button
@@ -149,12 +149,13 @@ export default function FeedCard({ item }: { item: FeedItem }) {
       <article className="post post-sponsored">
         <header className="post-head">
           <ProfileAvatar name={item.sponsor} avatar={item.avatar} tone="amber" />
-          <div className="who"><strong>{item.sponsor}</strong><span>{item.place}</span></div>
+          <div className="who">
+            <strong><Link href={`/entreprise/${item.businessUsername}`}>{item.sponsor}</Link></strong>
+          </div>
           <span className="badge badge-amber">Sponsorisé</span>
         </header>
-        <h2 className="post-title">{item.title}</h2>
-        <ExpandableText description={item.description} more={item.more} />
-        <a className="cta" href="#">{item.cta} →</a>
+        <MediaTile item={item} tone="amber" />
+        <Actions item={item} />
       </article>
     );
   }

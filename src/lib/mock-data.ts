@@ -32,7 +32,7 @@ export type SummaryItem = Base & {
   readingMinutes: number;
   author: string;
   media?: {
-    type: "image" | "video";
+    type: "image";
     url: string;
     ratio: "square" | "portrait";
   };
@@ -42,9 +42,13 @@ export type SponsoredItem = Base & {
   type: "sponsored";
   category: Category;
   sponsor: string;
+  businessUsername: string;
   avatar?: string;
-  place: string;
-  cta: string;
+  media: {
+    type: "image";
+    url: string;
+    ratio: "square" | "portrait";
+  };
 };
 
 export type CreatorItem = Base & {
@@ -88,6 +92,25 @@ const hoursAgo = (h: number) =>
 
 export const CREATOR_PROFILES: CreatorProfile[] = [{ username: "andry.rakoto", creator: "Andry Rakoto", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e", job: "Entrepreneur", category: "Business", location: "Antananarivo, Madagascar", bio: "Entrepreneur et créateur de contenus. Je partage des méthodes simples pour mieux organiser son activité, développer ses compétences et passer à l’action.", stats: { publications: 24, followers: 1284, likes: 8642, comments: 327, shares: 184, downloads: 96 } }];
 export const FEED: FeedItem[] = [
+  {
+    id: "ad1",
+    type: "sponsored",
+    title: "",
+    description: "",
+    publishedAt: "",
+    category: "Business",
+    sponsor: "Nexa Business",
+    businessUsername: "nexa.business",
+    avatar: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43",
+    media: {
+      type: "image",
+      url: "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
+      ratio: "portrait",
+    },
+    comments: 0,
+    likes: 0,
+    shares: 0,
+  },
   {
     id: "c1",
     type: "creator",
