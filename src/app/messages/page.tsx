@@ -1,4 +1,5 @@
 "use client";
+
 import { useMemo, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import {
@@ -19,6 +20,14 @@ type Conversation = {
   unread?: number;
   online?: boolean;
   official?: boolean;
+};
+
+type Message = {
+  id: string;
+  from: "me" | "them";
+  text: string;
+  time: string;
+  read?: boolean;
 };
 
 const CONVERSATIONS: Conversation[] = [
@@ -57,58 +66,74 @@ const CONVERSATIONS: Conversation[] = [
   },
 ];
 
-const MESSAGES: Record<string, { from: "me" | "them"; text: string; time: string }[]> = {
+const INITIAL_MESSAGES: Record<string, Message[]> = {
   ar10p: [
     {
+      id: "ar10p-1",
       from: "them",
       text: "Bienvenue sur AR10P 👋",
       time: "10:24",
+      read: true,
     },
     {
+      id: "ar10p-2",
       from: "them",
       text: "Ton nouveau résumé est disponible : Finance personnelle en 10 pages.",
       time: "10:25",
+      read: true,
     },
     {
+      id: "ar10p-3",
       from: "me",
       text: "Parfait, je vais le lire.",
       time: "10:27",
+      read: true,
     },
   ],
   miora: [
     {
+      id: "miora-1",
       from: "them",
       text: "Tu as lu le résumé sur l'IA ?",
       time: "18:02",
+      read: true,
     },
     {
+      id: "miora-2",
       from: "me",
       text: "Pas encore, mais il est dans ma bibliothèque.",
       time: "18:05",
+      read: true,
     },
   ],
   club: [
     {
+      id: "club-1",
       from: "them",
       text: "Je propose le prochain thème : les grands entrepreneurs.",
       time: "17:12",
+      read: true,
     },
   ],
   lala: [
     {
+      id: "lala-1",
       from: "them",
       text: "Merci pour le résumé !",
       time: "Hier",
+      read: false,
     },
   ],
 };
 
 export default function MessagesPage() {
-  const [selectedId, setSelectedId] = useState("ar10p");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState("");
+  const [messagesByConversation, setMessagesByConversation] =
+    useState(INITIAL_MESSAGES);
 
-  const selected = CONVERSATIONS.find((item) => item.id === selectedId) ?? CONVERSATIONS[0];
+  const selected = CONVERSATIONS.find((item) => item.id === selectedId) ?? null;
 
   const filteredConversations = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -122,10 +147,47 @@ export default function MessagesPage() {
     );
   }, [search]);
 
-  const messages = MESSAGES[selected.id] ?? [];
+  const messages = selected
+    ? messagesByConversation[selected.id] ?? []
+    : [];
+
+  function openConversation(id: string) {
+    setSelectedId(id);
+    setDraft("");
+
+    setMessagesByConversation((current) => current);
+  }
+
+  function closeConversation() {
+    setSelectedId(null);
+    setDraft("");
+  }
 
   function sendMessage() {
-    if (!draft.trim()) return;
+    const text = draft.trim();
+
+    if (!text || !selected) return;
+
+    const now = new Date();
+
+    const time = now.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const message: Message = {
+      id: `${selected.id}-${Date.now()}`,
+      from: "me",
+      text,
+      time,
+      read: false,
+    };
+
+    setMessagesByConversation((current) => ({
+      ...current,
+      [selected.id]: [...(current[selected.id] ?? []), message],
+    }));
+
     setDraft("");
   }
 
@@ -135,16 +197,24 @@ export default function MessagesPage() {
         <div>
           <p className="eyebrow">AR10P</p>
           <h1>Messages</h1>
-          <p>Discute, partage et découvre de nouveaux résumés.</p>
+          <p>
+            {selected
+              ? `Conversation avec ${selected.name}`
+              : "Discute, partage et découvre de nouveaux résumés."}
+          </p>
         </div>
 
-        <button className="messages-icon-button" aria-label="Notifications">
+        <button
+          className="messages-icon-button"
+          aria-label="Notifications"
+          type="button"
+        >
           <IconBell />
         </button>
       </header>
 
-      <main className="messages-layout">
-        <section className="messages-inbox">
+      {!selected ? (
+        <main className="messages-inbox messages-inbox-full">
           <div className="messages-search">
             <IconSearch size={18} />
             <input
@@ -164,10 +234,9 @@ export default function MessagesPage() {
             {filteredConversations.map((conversation) => (
               <button
                 key={conversation.id}
-                className={`conversation-item ${
-                  selected.id === conversation.id ? "active" : ""
-                }`}
-                onClick={() => setSelectedId(conversation.id)}
+                className="conversation-item"
+                onClick={() => openConversation(conversation.id)}
+                type="button"
               >
                 <div className="conversation-avatar">
                   {conversation.initials}
@@ -178,13 +247,16 @@ export default function MessagesPage() {
                   <div className="conversation-heading">
                     <strong>
                       {conversation.name}
-                      {conversation.official && <span className="official-badge">OFFICIEL</span>}
+                      {conversation.official && (
+                        <span className="official-badge">OFFICIEL</span>
+                      )}
                     </strong>
                     <span>{conversation.time}</span>
                   </div>
 
                   <div className="conversation-preview">
                     <span>{conversation.preview}</span>
+
                     {conversation.unread ? (
                       <b className="unread-badge">{conversation.unread}</b>
                     ) : null}
@@ -193,88 +265,122 @@ export default function MessagesPage() {
               </button>
             ))}
           </div>
-        </section>
+        </main>
+      ) : (
+        <main className="message-conversation">
+          <section
+            className="chat-panel"
+            aria-label={`Conversation avec ${selected.name}`}
+          >
+            <div className="chat-header">
+              <div className="chat-person">
+                <button
+                  className="conversation-back"
+                  onClick={closeConversation}
+                  aria-label="Retour aux conversations"
+                  type="button"
+                >
+                  ←
+                </button>
 
-        <section className="chat-panel" aria-label={`Conversation avec ${selected.name}`}>
-          <div className="chat-header">
-            <div className="chat-person">
-              <div className="conversation-avatar large">
-                {selected.initials}
-                {selected.online && <span className="online-dot" />}
-              </div>
+                <div className="conversation-avatar large">
+                  {selected.initials}
+                  {selected.online && <span className="online-dot" />}
+                </div>
 
-              <div>
-                <strong>{selected.name}</strong>
-                <span>
-                  {selected.official
-                    ? "Compte officiel AR10P"
-                    : selected.online
-                      ? "En ligne"
-                      : "Dernière activité récente"}
-                </span>
-              </div>
-            </div>
-
-            <button className="messages-icon-button" aria-label="Informations">
-              <IconMessage />
-            </button>
-          </div>
-
-          <div className="chat-body">
-            <div className="chat-date">Aujourd&apos;hui</div>
-
-            {messages.map((message, index) => (
-              <div
-                key={`${message.time}-${index}`}
-                className={`message-row ${message.from === "me" ? "mine" : ""}`}
-              >
-                <div className="message-bubble">
-                  <p>{message.text}</p>
+                <div>
+                  <strong>{selected.name}</strong>
                   <span>
-                    <IconClock />
-                    {message.time}
+                    {selected.official
+                      ? "Compte officiel AR10P"
+                      : selected.online
+                        ? "En ligne"
+                        : "Dernière activité récente"}
                   </span>
                 </div>
               </div>
-            ))}
 
-            {selected.id === "ar10p" && (
-              <article className="shared-summary">
-                <div className="shared-summary-icon">
-                  <IconBookmark />
+              <button
+                className="messages-icon-button"
+                aria-label="Informations"
+                type="button"
+              >
+                <IconMessage />
+              </button>
+            </div>
+
+            <div className="chat-body">
+              <div className="chat-date">Aujourd&apos;hui</div>
+
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`message-row ${
+                    message.from === "me" ? "mine" : ""
+                  }`}
+                >
+                  <div className="message-bubble">
+                    <p>{message.text}</p>
+                    <span>
+                      <IconClock />
+                      {message.time}
+                      {message.from === "me" && (
+                        <span className="message-read">
+                          {message.read ? "✓✓" : "✓"}
+                        </span>
+                      )}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="shared-summary-label">RÉSUMÉ PARTAGÉ</span>
-                  <strong>Finance personnelle en 10 pages</strong>
-                  <p>Les principes essentiels pour mieux gérer son argent.</p>
-                  <button>Lire le résumé</button>
-                </div>
-              </article>
-            )}
-          </div>
+              ))}
 
-          <div className="chat-composer">
-            <input
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") sendMessage();
-              }}
-              placeholder="Écrire un message..."
-              aria-label="Écrire un message"
-            />
-            <button
-              className="send-button"
-              onClick={sendMessage}
-              aria-label="Envoyer le message"
-            >
-              <IconSend />
-            </button>
-          </div>
-        </section>
-      </main>
+              {selected.id === "ar10p" && (
+                <article className="shared-summary">
+                  <div className="shared-summary-icon">
+                    <IconBookmark />
+                  </div>
 
-        <BottomNav />
+                  <div>
+                    <span className="shared-summary-label">
+                      RÉSUMÉ PARTAGÉ
+                    </span>
+                    <strong>Finance personnelle en 10 pages</strong>
+                    <p>
+                      Les principes essentiels pour mieux gérer son argent.
+                    </p>
+                    <button type="button">Lire le résumé</button>
+                  </div>
+                </article>
+              )}
+            </div>
+
+            <div className="chat-composer">
+              <input
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    sendMessage();
+                  }
+                }}
+                placeholder="Écrire un message..."
+                aria-label="Écrire un message"
+              />
+
+              <button
+                className="send-button"
+                onClick={sendMessage}
+                aria-label="Envoyer le message"
+                type="button"
+              >
+                <IconSend />
+              </button>
+            </div>
+          </section>
+        </main>
+      )}
+
+      <BottomNav />
     </div>
   );
 }
