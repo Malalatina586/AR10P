@@ -1,5 +1,20 @@
+import type { Metadata, Viewport } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "AR10P Admin",
+  description: "Centre de contrôle administrateur AR10P.",
+  applicationName: "AR10P Admin",
+  manifest: "/admin/manifest.webmanifest",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#06091b",
+};
 
 export default async function ProtectedAdminLayout({
   children,

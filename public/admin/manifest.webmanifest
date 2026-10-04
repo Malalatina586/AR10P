@@ -1,0 +1,19 @@
+{
+  "name": "AR10P Admin",
+  "short_name": "AR10P Admin",
+  "id": "/admin",
+  "description": "Centre de contrôle administrateur AR10P.",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#06091b",
+  "theme_color": "#06091b",
+  "icons": [
+    {
+      "src": "/admin/icon.jpeg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
