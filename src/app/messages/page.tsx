@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import {
-  IconBell,
+
   IconBookmark,
   IconClock,
   IconMessage,
@@ -193,25 +193,6 @@ export default function MessagesPage() {
 
   return (
     <div className="app-shell messages-page">
-      <header className="topbar messages-topbar">
-        <div>
-          <p className="eyebrow">AR10P</p>
-          <h1>Messages</h1>
-          <p>
-            {selected
-              ? `Conversation avec ${selected.name}`
-              : "Discute, partage et découvre de nouveaux résumés."}
-          </p>
-        </div>
-
-        <button
-          className="messages-icon-button"
-          aria-label="Notifications"
-          type="button"
-        >
-          <IconBell />
-        </button>
-      </header>
 
       {!selected ? (
         <main className="messages-inbox messages-inbox-full">
