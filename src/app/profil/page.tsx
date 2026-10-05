@@ -1,30 +1,29 @@
-'use client';
-import { useState } from "react";
+"use client";
 
-/**
- * AR10P — Page Profil
- * Utilise les variables de globals.css et le système pf-*.
- */
-
-import {
-  Bell,
-  ChevronRight,
-  Languages,
-  Moon,
-  Settings,
-} from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Bell, ChevronRight, Languages, Moon, Settings } from "lucide-react";
 
 import {
   NETWORKS,
   useConnectedAccounts,
   useTheme,
-} from '@/lib/profile-shared';
+} from "@/lib/profile-shared";
 
-import { CATEGORIES } from '@/lib/mock-data';
+import { CATEGORIES } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/client";
 
 import BottomNav from "@/components/BottomNav";
 
-import './profil.css';
+import "./profil.css";
+
+type Profile = {
+  username: string | null;
+  display_name: string | null;
+  role: "user" | "admin";
+  avatar_url: string | null;
+  created_at: string;
+};
 
 function Section({
   title,
@@ -85,22 +84,51 @@ function Switch({
       aria-checked={on}
       aria-label={label}
       onClick={onChange}
-      className={`pf-sw${on ? ' on' : ''}`}
+      className={`pf-sw${on ? " on" : ""}`}
     />
   );
 }
 
 export default function ProfilPage() {
+  const router = useRouter();
   const { isConnected, toggle } = useConnectedAccounts();
   const { dark, toggleDark } = useTheme();
 
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [notifs, setNotifs] = useState(true);
+
   const [topics, setTopics] = useState<string[]>([
-    'Business',
-    'Tech',
-    'Finance',
+    "Business",
+    "Tech",
+    "Finance",
   ]);
 
-  const [notifs, setNotifs] = useState(true);
+  useEffect(() => {
+    async function loadProfile() {
+      const supabase = createClient();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setLoadingProfile(false);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("username, display_name, role, avatar_url, created_at")
+        .eq("id", user.id)
+        .single();
+
+      setProfile(data);
+      setLoadingProfile(false);
+    }
+
+    loadProfile();
+  }, []);
 
   const toggleTopic = (category: string) =>
     setTopics((current) =>
@@ -108,6 +136,20 @@ export default function ProfilPage() {
         ? current.filter((item) => item !== category)
         : [...current, category],
     );
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  }
+
+  const displayName =
+    profile?.display_name?.trim() || "Utilisateur AR10P";
+
+  const avatarLetter = displayName.charAt(0).toUpperCase();
+
+  const accountLabel =
+    profile?.role === "admin" ? "Administrateur" : "Utilisateur";
 
   return (
     <main className="pf">
@@ -119,22 +161,48 @@ export default function ProfilPage() {
         </button>
       </header>
 
-      {/* Identité anonyme */}
+      {/* Identité réelle */}
       <div className="pf-id">
-        <div className="pf-av">L</div>
+        <div className="pf-av">
+          {profile?.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt=""
+              width={68}
+              height={68}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            avatarLetter
+          )}
+        </div>
 
         <div>
-          <div className="pf-nm">Lecteur #4821</div>
-          <div className="pf-sb">Sans compte · gratuit</div>
+          <div className="pf-nm">
+            {loadingProfile ? "Chargement..." : displayName}
+          </div>
+
+          <div className="pf-sb">
+            {loadingProfile
+              ? "Chargement du compte..."
+              : profile
+                ? `${accountLabel}${profile.username ? ` · @${profile.username}` : ""}`
+                : "Visiteur · non connecté"}
+          </div>
         </div>
       </div>
 
       {/* Statistiques */}
       <dl className="pf-stats">
         {[
-          ['12', 'Lus'],
-          ['5', 'Téléchargés'],
-          ['8', 'Favoris'],
+          ["12", "Lus"],
+          ["5", "Téléchargés"],
+          ["8", "Favoris"],
         ].map(([n, label]) => (
           <div key={label}>
             <dt className="pf-sr">{label}</dt>
@@ -152,7 +220,7 @@ export default function ProfilPage() {
               type="button"
               key={category}
               aria-pressed={topics.includes(category)}
-              className={topics.includes(category) ? 'on' : ''}
+              className={topics.includes(category) ? "on" : ""}
               onClick={() => toggleTopic(category)}
             >
               {category}
@@ -175,14 +243,14 @@ export default function ProfilPage() {
                 key={id}
                 icon={<Icon size={17} />}
                 title={name}
-                sub={on ? 'Connecté' : 'Non connecté'}
+                sub={on ? "Connecté" : "Non connecté"}
                 right={
                   <button
                     type="button"
-                    className={`pf-cn${on ? ' off' : ''}`}
+                    className={`pf-cn${on ? " off" : ""}`}
                     onClick={() => toggle(id)}
                   >
-                    {on ? 'Déconnecter' : 'Connecter'}
+                    {on ? "Déconnecter" : "Connecter"}
                   </button>
                 }
               />
@@ -231,13 +299,32 @@ export default function ProfilPage() {
         </div>
       </Section>
 
-      <p className="pf-note">
-        Aucune inscription requise. Ton identifiant anonyme est lié à cet
-        appareil.
-      </p>
+      {profile ? (
+        <button
+          type="button"
+          onClick={handleLogout}
+          style={{
+            width: "100%",
+            marginTop: 20,
+            padding: "12px 16px",
+            borderRadius: 14,
+            border: "1px solid var(--line)",
+            background: "var(--surface)",
+            color: "var(--text)",
+            font: "inherit",
+            fontWeight: 600,
+          }}
+        >
+          Se déconnecter
+        </button>
+      ) : (
+        <p className="pf-note">
+          Connecte-toi ou crée un compte pour accéder aux fonctionnalités
+          réservées aux utilisateurs.
+        </p>
+      )}
 
-      {/* Navigation principale AR10P */}
-        <BottomNav />
+      <BottomNav />
     </main>
   );
 }

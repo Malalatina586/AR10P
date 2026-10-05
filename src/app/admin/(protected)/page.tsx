@@ -1,6 +1,6 @@
-"use client";
 
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import {
   IconBell,
   IconBookmark,
@@ -34,7 +34,18 @@ const ACTIVITY = [
   { label: "Téléchargements", value: "—", Icon: IconDownload },
 ];
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const supabase = await createClient();
+
+  const { count: userCount } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
+
+  const stats = STATS.map((stat) =>
+    stat.label === "Utilisateurs"
+      ? { ...stat, value: String(userCount ?? 0) }
+      : stat,
+  );
   return (
     <div className="admin-app">
       <header className="admin-header">
@@ -66,7 +77,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="admin-stat-grid">
-            {STATS.map(({ label, value, Icon }) => (
+            {stats.map(({ label, value, Icon }) => (
               <article className="admin-stat-card" key={label}>
                 <div className="admin-stat-icon">
                   <Icon size={19} />
