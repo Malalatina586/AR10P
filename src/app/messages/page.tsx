@@ -1,9 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import {
-
+  getCurrentUser,
+  getMyConversations,
+  getProfile,
+  getMessages,
+  sendMessage as sendSupabaseMessage,
+  type ConversationRow,
+  type MessageRow,
+  type Profile,
+} from "@/lib/messaging";
+import {
   IconBookmark,
   IconClock,
   IconMessage,
@@ -17,9 +26,9 @@ type Conversation = {
   initials: string;
   preview: string;
   time: string;
-  unread?: number;
   online?: boolean;
   official?: boolean;
+  otherUserId: string;
 };
 
 type Message = {
@@ -30,170 +39,254 @@ type Message = {
   read?: boolean;
 };
 
-const CONVERSATIONS: Conversation[] = [
-  {
-    id: "ar10p",
-    name: "AR10P",
-    initials: "AR",
-    preview: "Nouveau : Finance personnelle en 10 pages",
-    time: "2 min",
-    unread: 2,
-    official: true,
-  },
-  {
-    id: "miora",
-    name: "Miora",
-    initials: "MI",
-    preview: "Tu as lu le résumé sur l'IA ?",
-    time: "18 min",
-    unread: 1,
-    online: true,
-  },
-  {
-    id: "club",
-    name: "Club lecture",
-    initials: "CL",
-    preview: "Je propose le prochain thème",
-    time: "1 h",
-  },
-  {
-    id: "lala",
-    name: "Lala",
-    initials: "LA",
-    preview: "Merci pour le résumé !",
-    time: "Hier",
-    online: true,
-  },
-];
+function formatTime(value: string) {
+  const date = new Date(value);
 
-const INITIAL_MESSAGES: Record<string, Message[]> = {
-  ar10p: [
-    {
-      id: "ar10p-1",
-      from: "them",
-      text: "Bienvenue sur AR10P 👋",
-      time: "10:24",
-      read: true,
-    },
-    {
-      id: "ar10p-2",
-      from: "them",
-      text: "Ton nouveau résumé est disponible : Finance personnelle en 10 pages.",
-      time: "10:25",
-      read: true,
-    },
-    {
-      id: "ar10p-3",
-      from: "me",
-      text: "Parfait, je vais le lire.",
-      time: "10:27",
-      read: true,
-    },
-  ],
-  miora: [
-    {
-      id: "miora-1",
-      from: "them",
-      text: "Tu as lu le résumé sur l'IA ?",
-      time: "18:02",
-      read: true,
-    },
-    {
-      id: "miora-2",
-      from: "me",
-      text: "Pas encore, mais il est dans ma bibliothèque.",
-      time: "18:05",
-      read: true,
-    },
-  ],
-  club: [
-    {
-      id: "club-1",
-      from: "them",
-      text: "Je propose le prochain thème : les grands entrepreneurs.",
-      time: "17:12",
-      read: true,
-    },
-  ],
-  lala: [
-    {
-      id: "lala-1",
-      from: "them",
-      text: "Merci pour le résumé !",
-      time: "Hier",
-      read: false,
-    },
-  ],
-};
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatConversationTime(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const now = new Date();
+  const sameDay =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate();
+
+  if (sameDay) {
+    return formatTime(value);
+  }
+
+  return date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+  });
+}
+
+function getDisplayName(profile: Profile | null, fallback = "Utilisateur") {
+  return (
+    profile?.display_name?.trim() ||
+    profile?.username?.trim() ||
+    fallback
+  );
+}
+
+function getInitials(name: string) {
+  const parts = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length === 0) {
+    return "U";
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
 
 export default function MessagesPage() {
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messagesByConversation, setMessagesByConversation] = useState<
+    Record<string, Message[]>
+  >({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState("");
-  const [messagesByConversation, setMessagesByConversation] =
-    useState(INITIAL_MESSAGES);
+  const [loading, setLoading] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const selected = CONVERSATIONS.find((item) => item.id === selectedId) ?? null;
+  const selected =
+    conversations.find((item) => item.id === selectedId) ?? null;
 
   const filteredConversations = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    if (!query) return CONVERSATIONS;
+    if (!query) {
+      return conversations;
+    }
 
-    return CONVERSATIONS.filter(
+    return conversations.filter(
       (conversation) =>
         conversation.name.toLowerCase().includes(query) ||
         conversation.preview.toLowerCase().includes(query),
     );
-  }, [search]);
+  }, [conversations, search]);
 
   const messages = selected
     ? messagesByConversation[selected.id] ?? []
     : [];
 
-  function openConversation(id: string) {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadConversations() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const user = await getCurrentUser();
+
+        if (!user) {
+          throw new Error("NOT_AUTHENTICATED");
+        }
+
+        const rows = await getMyConversations(user.id);
+
+        const loaded = await Promise.all(
+          rows.map(async (conversation: ConversationRow) => {
+            const otherUserId =
+              conversation.user_a_id === user.id
+                ? conversation.user_b_id
+                : conversation.user_a_id;
+
+            const profile = await getProfile(otherUserId);
+            const name = getDisplayName(profile);
+
+            return {
+              id: conversation.id,
+              name,
+              initials: getInitials(name),
+              preview: "Conversation",
+              time: formatConversationTime(conversation.updated_at),
+              official: profile?.role === "admin",
+              otherUserId,
+            };
+          }),
+        );
+
+        if (cancelled) {
+          return;
+        }
+
+        setCurrentUserId(user.id);
+        setConversations(loaded);
+      } catch (loadError) {
+        if (cancelled) {
+          return;
+        }
+
+        console.error("Erreur chargement Messages:", loadError);
+        setError("Impossible de charger les conversations.");
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadConversations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function openConversation(id: string) {
     setSelectedId(id);
     setDraft("");
+    setError(null);
 
-    setMessagesByConversation((current) => current);
+    if (messagesByConversation[id]) {
+      return;
+    }
+
+    try {
+      setLoadingMessages(true);
+
+      const loadedMessages = await getMessages(id);
+
+      setMessagesByConversation((current) => ({
+        ...current,
+        [id]: loadedMessages.map((message: MessageRow) => ({
+          id: message.id,
+          from: message.sender_id === currentUserId ? "me" : "them",
+          text: message.body,
+          time: formatTime(message.created_at),
+          read: Boolean(message.read_at),
+        })),
+      }));
+    } catch (loadError) {
+      console.error("Erreur chargement messages:", loadError);
+      setError("Impossible de charger cette conversation.");
+    } finally {
+      setLoadingMessages(false);
+    }
   }
 
   function closeConversation() {
     setSelectedId(null);
     setDraft("");
+    setError(null);
   }
 
-  function sendMessage() {
+  async function sendMessage() {
     const text = draft.trim();
 
-    if (!text || !selected) return;
+    if (!text || !selected || sending) {
+      return;
+    }
 
-    const now = new Date();
+    try {
+      setSending(true);
+      setError(null);
 
-    const time = now.toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+      const messageId = await sendSupabaseMessage(selected.id, text);
 
-    const message: Message = {
-      id: `${selected.id}-${Date.now()}`,
-      from: "me",
-      text,
-      time,
-      read: false,
-    };
+      const message: Message = {
+        id: messageId,
+        from: "me",
+        text,
+        time: formatTime(new Date().toISOString()),
+        read: false,
+      };
 
-    setMessagesByConversation((current) => ({
-      ...current,
-      [selected.id]: [...(current[selected.id] ?? []), message],
-    }));
+      setMessagesByConversation((current) => ({
+        ...current,
+        [selected.id]: [...(current[selected.id] ?? []), message],
+      }));
 
-    setDraft("");
+      setConversations((current) =>
+        current.map((conversation) =>
+          conversation.id === selected.id
+            ? {
+                ...conversation,
+                preview: text,
+                time: formatTime(new Date().toISOString()),
+              }
+            : conversation,
+        ),
+      );
+
+      setDraft("");
+    } catch (sendError) {
+      console.error("Erreur envoi message:", sendError);
+      setError("Impossible d'envoyer le message.");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
     <div className="app-shell messages-page">
-
       {!selected ? (
         <main className="messages-inbox messages-inbox-full">
           <div className="messages-search">
@@ -211,41 +304,72 @@ export default function MessagesPage() {
             <span>{filteredConversations.length}</span>
           </div>
 
-          <div className="conversation-list">
-            {filteredConversations.map((conversation) => (
-              <button
-                key={conversation.id}
-                className="conversation-item"
-                onClick={() => openConversation(conversation.id)}
-                type="button"
-              >
-                <div className="conversation-avatar">
-                  {conversation.initials}
-                  {conversation.online && <span className="online-dot" />}
-                </div>
+          {error && (
+            <p role="alert" style={{ padding: "0 18px" }}>
+              {error}
+            </p>
+          )}
 
+          {loading ? (
+            <div className="conversation-list">
+              <div className="conversation-item">
+                <div className="conversation-content">
+                  <strong>Chargement des conversations...</strong>
+                </div>
+              </div>
+            </div>
+          ) : filteredConversations.length === 0 ? (
+            <div className="conversation-list">
+              <div className="conversation-item">
                 <div className="conversation-content">
                   <div className="conversation-heading">
-                    <strong>
-                      {conversation.name}
-                      {conversation.official && (
-                        <span className="official-badge">OFFICIEL</span>
-                      )}
-                    </strong>
-                    <span>{conversation.time}</span>
+                    <strong>Aucune conversation</strong>
                   </div>
-
                   <div className="conversation-preview">
-                    <span>{conversation.preview}</span>
-
-                    {conversation.unread ? (
-                      <b className="unread-badge">{conversation.unread}</b>
-                    ) : null}
+                    <span>
+                      Tes conversations réelles apparaîtront ici.
+                    </span>
                   </div>
                 </div>
-              </button>
-            ))}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="conversation-list">
+              {filteredConversations.map((conversation) => (
+                <button
+                  key={conversation.id}
+                  className="conversation-item"
+                  onClick={() => void openConversation(conversation.id)}
+                  type="button"
+                >
+                  <div className="conversation-avatar">
+                    {conversation.initials}
+                    {conversation.online && (
+                      <span className="online-dot" />
+                    )}
+                  </div>
+
+                  <div className="conversation-content">
+                    <div className="conversation-heading">
+                      <strong>
+                        {conversation.name}
+                        {conversation.official && (
+                          <span className="official-badge">
+                            OFFICIEL
+                          </span>
+                        )}
+                      </strong>
+                      <span>{conversation.time}</span>
+                    </div>
+
+                    <div className="conversation-preview">
+                      <span>{conversation.preview}</span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </main>
       ) : (
         <main className="message-conversation">
@@ -266,7 +390,6 @@ export default function MessagesPage() {
 
                 <div className="conversation-avatar large">
                   {selected.initials}
-                  {selected.online && <span className="online-dot" />}
                 </div>
 
                 <div>
@@ -274,9 +397,7 @@ export default function MessagesPage() {
                   <span>
                     {selected.official
                       ? "Compte officiel AR10P"
-                      : selected.online
-                        ? "En ligne"
-                        : "Dernière activité récente"}
+                      : "Conversation"}
                   </span>
                 </div>
               </div>
@@ -291,31 +412,47 @@ export default function MessagesPage() {
             </div>
 
             <div className="chat-body">
-              <div className="chat-date">Aujourd&apos;hui</div>
+              <div className="chat-date">Messages</div>
 
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`message-row ${
-                    message.from === "me" ? "mine" : ""
-                  }`}
-                >
-                  <div className="message-bubble">
-                    <p>{message.text}</p>
-                    <span>
-                      <IconClock />
-                      {message.time}
-                      {message.from === "me" && (
-                        <span className="message-read">
-                          {message.read ? "✓✓" : "✓"}
-                        </span>
-                      )}
-                    </span>
-                  </div>
+              {error && (
+                <p role="alert" style={{ padding: "0 18px" }}>
+                  {error}
+                </p>
+              )}
+
+              {loadingMessages ? (
+                <div className="chat-date">
+                  Chargement des messages...
                 </div>
-              ))}
+              ) : messages.length === 0 ? (
+                <div className="chat-date">
+                  Aucun message pour le moment.
+                </div>
+              ) : (
+                messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`message-row ${
+                      message.from === "me" ? "mine" : ""
+                    }`}
+                  >
+                    <div className="message-bubble">
+                      <p>{message.text}</p>
+                      <span>
+                        <IconClock />
+                        {message.time}
+                        {message.from === "me" && (
+                          <span className="message-read">
+                            {message.read ? "✓✓" : "✓"}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
 
-              {selected.id === "ar10p" && (
+              {selected.official && (
                 <article className="shared-summary">
                   <div className="shared-summary-icon">
                     <IconBookmark />
@@ -323,13 +460,14 @@ export default function MessagesPage() {
 
                   <div>
                     <span className="shared-summary-label">
-                      RÉSUMÉ PARTAGÉ
+                      RÉSUMÉ AR10P
                     </span>
-                    <strong>Finance personnelle en 10 pages</strong>
+                    <strong>Bibliothèque AR10P</strong>
                     <p>
-                      Les principes essentiels pour mieux gérer son argent.
+                      Les contenus officiels AR10P pourront être
+                      partagés ici.
                     </p>
-                    <button type="button">Lire le résumé</button>
+                    <button type="button">Voir la bibliothèque</button>
                   </div>
                 </article>
               )}
@@ -341,18 +479,20 @@ export default function MessagesPage() {
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
-                    sendMessage();
+                    void sendMessage();
                   }
                 }}
                 placeholder="Écrire un message..."
                 aria-label="Écrire un message"
+                disabled={sending}
               />
 
               <button
                 className="send-button"
-                onClick={sendMessage}
+                onClick={() => void sendMessage()}
                 aria-label="Envoyer le message"
                 type="button"
+                disabled={sending}
               >
                 <IconSend />
               </button>
