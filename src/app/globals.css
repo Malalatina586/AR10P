@@ -548,3 +548,18 @@ button:disabled{cursor:default}
 .who a:hover{
   color:var(--blue);
 }
+
+.new-message-button{
+  border:0;
+  border-radius:10px;
+  padding:7px 12px;
+  background:var(--text);
+  color:var(--bg);
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.new-message-button:active{
+  transform:scale(.98);
+}

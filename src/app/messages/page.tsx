@@ -7,6 +7,9 @@ import {
   getMyConversations,
   getProfile,
   getMessages,
+  getOrCreateDirectConversation,
+  createMessageRequest,
+  searchUsers,
   sendMessage as sendSupabaseMessage,
   type ConversationRow,
   type MessageRow,
@@ -113,6 +116,10 @@ export default function MessagesPage() {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [newMessageOpen, setNewMessageOpen] = useState(false);
+  const [newMessageQuery, setNewMessageQuery] = useState("");
+  const [newMessageResults, setNewMessageResults] = useState<Profile[]>([]);
+  const [newMessageSending, setNewMessageSending] = useState(false);
 
   const selected =
     conversations.find((item) => item.id === selectedId) ?? null;
@@ -199,6 +206,61 @@ export default function MessagesPage() {
       cancelled = true;
     };
   }, []);
+
+  async function searchNewMessageUsers() {
+    const query = newMessageQuery.trim();
+    if (!currentUserId || query.length < 2) {
+      setNewMessageResults([]);
+      return;
+    }
+    try {
+      setError(null);
+      const results = await searchUsers(query, currentUserId);
+      setNewMessageResults(results);
+    } catch (searchError) {
+      console.error("Erreur recherche utilisateur:", searchError);
+      setError("Impossible de rechercher cet utilisateur.");
+    }
+  }
+
+  async function startNewConversation(profile: Profile) {
+    if (!currentUserId || newMessageSending) {
+      return;
+    }
+
+    try {
+      setNewMessageSending(true);
+      setError(null);
+
+      try {
+        const conversationId = await getOrCreateDirectConversation(profile.id);
+        setNewMessageOpen(false);
+        setNewMessageQuery("");
+        setNewMessageResults([]);
+        await openConversation(conversationId);
+        return;
+      } catch (conversationError) {
+        const message = conversationError instanceof Error
+          ? conversationError.message
+          : String(conversationError);
+
+        if (!message.includes("MESSAGE_REQUEST_REQUIRED")) {
+          throw conversationError;
+        }
+      }
+
+      await createMessageRequest(profile.id);
+      setNewMessageOpen(false);
+      setNewMessageQuery("");
+      setNewMessageResults([]);
+      setError(`Demande envoyée à ${getDisplayName(profile)}.`);
+    } catch (startError) {
+      console.error("Erreur nouvelle conversation:", startError);
+      setError("Impossible de démarrer cette conversation.");
+    } finally {
+      setNewMessageSending(false);
+    }
+  }
 
   async function openConversation(id: string) {
     setSelectedId(id);
@@ -301,8 +363,52 @@ export default function MessagesPage() {
 
           <div className="messages-section-title">
             <span>Conversations</span>
+                <button
+                  className="new-message-button"
+                  type="button"
+                  onClick={() => {
+                    setNewMessageOpen((current) => !current);
+                    setNewMessageQuery("");
+                    setNewMessageResults([]);
+                    setError(null);
+                  }}
+                >
+                  Nouveau
+                </button>
             <span>{filteredConversations.length}</span>
           </div>
+
+          {newMessageOpen && (
+            <div className="new-message-panel">
+              <input
+                value={newMessageQuery}
+                onChange={(event) => setNewMessageQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    void searchNewMessageUsers();
+                  }
+                }}
+                placeholder="Rechercher un utilisateur..."
+                aria-label="Rechercher un utilisateur"
+              />
+              <button
+                type="button"
+                onClick={() => void searchNewMessageUsers()}
+              >
+                Rechercher
+              </button>
+              {newMessageResults.map((profile) => (
+                <button
+                  key={profile.id}
+                  type="button"
+                  className="new-message-result"
+                  onClick={() => void startNewConversation(profile)}
+                >
+                  {getDisplayName(profile)}
+                </button>
+              ))}
+            </div>
+          )}
 
           {error && (
             <p role="alert" style={{ padding: "0 18px" }}>
