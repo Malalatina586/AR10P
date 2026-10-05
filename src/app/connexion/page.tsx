@@ -34,7 +34,7 @@ export default function ConnexionPage() {
       return;
     }
 
-    router.push("/profil");
+    router.push("/");
   }
 
   return (

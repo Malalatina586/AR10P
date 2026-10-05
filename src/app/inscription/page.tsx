@@ -47,7 +47,7 @@ export default function InscriptionPage() {
       return;
     }
 
-    router.push("/profil");
+    router.push("/");
   }
 
   return (
