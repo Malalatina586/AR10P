@@ -233,3 +233,97 @@ export async function unfollowUser(targetUserId: string) {
 
   if (error) throw error;
 }
+
+export type MessageActionState =
+  | "direct"
+  | "request"
+  | "outgoing_pending"
+  | "incoming_pending"
+  | "blocked";
+
+export async function getMessageActionState(targetUserId: string) {
+  const user = await getCurrentUser();
+
+  if (!user || user.id === targetUserId) {
+    return "blocked" as MessageActionState;
+  }
+
+  const [{ data: following }, { data: followedBy }, { data: outgoing }, { data: incoming }, { data: accepted }, { data: blockedByMe }, { data: blockedMe }] =
+    await Promise.all([
+      supabase
+        .from("follows")
+        .select("follower_id")
+        .eq("follower_id", user.id)
+        .eq("following_id", targetUserId)
+        .maybeSingle(),
+
+      supabase
+        .from("follows")
+        .select("follower_id")
+        .eq("follower_id", targetUserId)
+        .eq("following_id", user.id)
+        .maybeSingle(),
+
+      supabase
+        .from("message_requests")
+        .select("id")
+        .eq("sender_id", user.id)
+        .eq("recipient_id", targetUserId)
+        .eq("status", "pending")
+        .maybeSingle(),
+
+      supabase
+        .from("message_requests")
+        .select("id")
+        .eq("sender_id", targetUserId)
+        .eq("recipient_id", user.id)
+        .eq("status", "pending")
+        .maybeSingle(),
+
+      supabase
+        .from("message_requests")
+        .select("id")
+        .or(
+          `and(sender_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(sender_id.eq.${targetUserId},recipient_id.eq.${user.id})`,
+        )
+        .eq("status", "accepted")
+        .limit(1)
+        .maybeSingle(),
+
+      supabase
+        .from("blocks")
+        .select("blocker_id")
+        .eq("blocker_id", user.id)
+        .eq("blocked_id", targetUserId)
+        .maybeSingle(),
+
+      supabase
+        .from("blocks")
+        .select("blocker_id")
+        .eq("blocker_id", targetUserId)
+        .eq("blocked_id", user.id)
+        .maybeSingle(),
+    ]);
+
+  if (blockedByMe || blockedMe) {
+    return "blocked" as MessageActionState;
+  }
+
+  if (following && followedBy) {
+    return "direct" as MessageActionState;
+  }
+
+  if (accepted) {
+    return "direct" as MessageActionState;
+  }
+
+  if (outgoing) {
+    return "outgoing_pending" as MessageActionState;
+  }
+
+  if (incoming) {
+    return "incoming_pending" as MessageActionState;
+  }
+
+  return "request" as MessageActionState;
+}

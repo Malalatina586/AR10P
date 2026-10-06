@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 
-import { useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import {
   getCurrentUser,
@@ -102,8 +103,9 @@ function getInitials(name: string) {
   return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 }
 
-export default function MessagesPage() {
+function MessagesContent() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messagesByConversation, setMessagesByConversation] = useState<
     Record<string, Message[]>
@@ -125,6 +127,8 @@ export default function MessagesPage() {
   const messages = selected
     ? messagesByConversation[selected.id] ?? []
     : [];
+
+
 
   useEffect(() => {
     let cancelled = false;
@@ -191,6 +195,8 @@ export default function MessagesPage() {
     };
   }, []);
 
+
+
   useEffect(() => {
     let cancelled = false;
 
@@ -219,7 +225,7 @@ export default function MessagesPage() {
   }, [profileSearch, currentUserId]);
 
 
-  async function openConversation(id: string) {
+  const openConversation = useCallback(async (id: string) => {
     setSelectedId(id);
     setDraft("");
     setError(null);
@@ -249,7 +255,19 @@ export default function MessagesPage() {
     } finally {
       setLoadingMessages(false);
     }
-  }
+  }, [currentUserId, messagesByConversation]);
+
+  useEffect(() => {
+    const conversationId = searchParams.get("conversation");
+
+    if (!conversationId || !conversations.some((item) => item.id === conversationId)) {
+      return;
+    }
+
+    void Promise.resolve().then(() => openConversation(conversationId));
+  }, [searchParams, conversations, openConversation]);
+
+
 
   function closeConversation() {
     setSelectedId(null);
@@ -554,3 +572,12 @@ export default function MessagesPage() {
     </div>
   );
 }
+function MessagesPage() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <MessagesContent />
+    </Suspense>
+  );
+}
+
+export default MessagesPage;
