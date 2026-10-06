@@ -171,3 +171,21 @@ export async function searchUsers(query: string, currentUserId: string) {
 
   return (data ?? []) as Profile[];
 }
+
+export async function getProfileByUsername(username: string) {
+  const cleanUsername = username.trim();
+
+  if (!cleanUsername) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, username, display_name, avatar_url, bio, role")
+    .eq("username", cleanUsername)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return data as (Profile & { bio: string | null; created_at: string }) | null;
+}
