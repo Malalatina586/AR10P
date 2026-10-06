@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProfileByUsername } from "@/lib/messaging";
+import ProfileActions from "@/components/ProfileActions";
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -49,15 +50,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         <p>{profile.bio || "Aucune biographie renseignée."}</p>
       </section>
 
-      <div className="creator-public-actions">
-        <button type="button" className="creator-follow">
-          + Suivre
-        </button>
-
-        <button type="button" className="creator-message">
-          Message
-        </button>
-      </div>
+      <ProfileActions targetUserId={profile.id} />
 
       <nav className="creator-public-tabs" aria-label="Profil utilisateur">
         <a href="#publications">Publications</a>

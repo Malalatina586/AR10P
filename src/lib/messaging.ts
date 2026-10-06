@@ -181,11 +181,55 @@ export async function getProfileByUsername(username: string) {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, username, display_name, avatar_url, bio, role")
+    .select("id, username, display_name, avatar_url, bio, role, created_at")
     .eq("username", cleanUsername)
     .maybeSingle();
 
   if (error) throw error;
 
   return data as (Profile & { bio: string | null; created_at: string }) | null;
+}
+
+export async function isFollowingUser(targetUserId: string) {
+  const user = await getCurrentUser();
+  if (!user || user.id === targetUserId) return false;
+
+  const { data, error } = await supabase
+    .from("follows")
+    .select("follower_id")
+    .eq("follower_id", user.id)
+    .eq("following_id", targetUserId)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return Boolean(data);
+}
+
+export async function followUser(targetUserId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("NOT_AUTHENTICATED");
+  if (user.id === targetUserId) throw new Error("CANNOT_FOLLOW_SELF");
+
+  const { error } = await supabase
+    .from("follows")
+    .insert({
+      follower_id: user.id,
+      following_id: targetUserId,
+    });
+
+  if (error) throw error;
+}
+
+export async function unfollowUser(targetUserId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("NOT_AUTHENTICATED");
+
+  const { error } = await supabase
+    .from("follows")
+    .delete()
+    .eq("follower_id", user.id)
+    .eq("following_id", targetUserId);
+
+  if (error) throw error;
 }
