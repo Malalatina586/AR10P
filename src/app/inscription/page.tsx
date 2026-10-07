@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IconUser } from "@/components/Icons";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +9,6 @@ import "../admin/(protected)/admin.css";
 import "./inscription.css";
 
 export default function InscriptionPage() {
-  const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
@@ -20,10 +18,12 @@ export default function InscriptionPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setSuccess("");
       const cleanUsername = username.trim().replace(/^@+/, "").toLowerCase();
       if (!/^[a-z0-9_]{3,30}$/.test(cleanUsername)) { setError("Le username doit contenir 3 à 30 caractères : lettres minuscules, chiffres ou _."); return; }
       const birth = new Date(birthDate + "T00:00:00"); const today = new Date(); let age = today.getFullYear() - birth.getFullYear(); const monthDiff = today.getMonth() - birth.getMonth(); if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--; if (!birthDate || Number.isNaN(birth.getTime()) || age < 18) { setError("Vous devez avoir au moins 18 ans pour créer un compte AR10P."); return; }
@@ -56,7 +56,8 @@ export default function InscriptionPage() {
       return;
     }
 
-    router.push("/");
+    setSuccess("Compte créé. Vérifie ta boîte email pour confirmer ton adresse avant de te connecter.");
+    setLoading(false);
   }
 
   return (
@@ -132,10 +133,7 @@ export default function InscriptionPage() {
                 required
               />
             </label>
-            <label>
-              <span>Nom</span>
-              <input type="text" name="lastName" value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Votre nom" autoComplete="family-name" required />
-            </label>
+
 
             <label>
               <span>Confirmer le mot de passe</span>
@@ -150,12 +148,10 @@ export default function InscriptionPage() {
                 required
               />
             </label>
-            <label>
-              <span>Nom</span>
-              <input type="text" name="lastName" value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Votre nom" autoComplete="family-name" required />
-            </label>
+
 
             {error && <p className="admin-login-error">{error}</p>}
+            {success && <p className="admin-login-success">{success}</p>}
 
             <button type="submit" disabled={loading}>
               {loading ? "Création..." : "Créer mon compte"}
