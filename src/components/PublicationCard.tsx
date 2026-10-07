@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -15,6 +16,7 @@ export type Publication = {
   created_at: string;
   author_name: string;
   author_username: string | null;
+  author_avatar_url: string | null;
 };
 
 type PublicationCardProps = {
@@ -35,6 +37,7 @@ function ExpandablePublicationText({ content }: { content: string }) {
 
   return (
     <>
+      {avatar}
       <p className="post-desc">{open || !isLong ? content : preview}</p>
       {isLong && (
         <button
@@ -57,6 +60,71 @@ const initials = (name: string) =>
     .map((part) => part[0])
     .join("")
     .toUpperCase();
+
+function AuthorAvatar({
+  name,
+  avatarUrl,
+}: {
+  name: string;
+  avatarUrl: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const avatar = avatarUrl ? (
+    <button
+      type="button"
+      className="avatar avatar-green avatar-photo"
+      onClick={() => setOpen(true)}
+      aria-label={`Agrandir la photo de profil de ${name}`}
+    >
+      <Image
+        src={avatarUrl}
+        alt=""
+        width={44}
+        height={44}
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
+    </button>
+  ) : (
+    <div className="avatar avatar-green">
+      {initials(name)}
+    </div>
+  );
+
+  return (
+    <>
+      {avatar}
+
+      {open && avatarUrl && (
+        <div
+          className="media-lightbox"
+          onClick={() => setOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Photo de profil de ${name}`}
+        >
+          <div
+            className="profile-lightbox-frame"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              src={avatarUrl}
+              alt=""
+              fill
+              sizes="80vw"
+              className="profile-lightbox-image"
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function PublicationCard({
   publication,
@@ -196,12 +264,18 @@ export default function PublicationCard({
   return (
     <article className="post">
       <header className="post-head">
-        <div className="avatar avatar-green">
-          {initials(publication.author_name)}
-        </div>
-
+        <AuthorAvatar
+          name={publication.author_name}
+          avatarUrl={publication.author_avatar_url}
+        />
         <div className="who">
-          <strong>{publication.author_name}</strong>
+          {publication.author_username ? (
+            <Link href={`/profil/${publication.author_username}`}>
+              <strong>{publication.author_name}</strong>
+            </Link>
+          ) : (
+            <strong>{publication.author_name}</strong>
+          )}
           <span>
             {publishedLabel} · {publication.category}
           </span>

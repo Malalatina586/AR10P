@@ -26,6 +26,7 @@ type ProfileRow = {
   id: string;
   display_name: string | null;
   username: string | null;
+  avatar_url: string | null;
 };
 
 type InteractionState = {
@@ -93,7 +94,7 @@ export default function Feed() {
       if (authorIds.length > 0) {
         const { data: profiles, error: profilesError } = await supabase
           .from("profiles")
-          .select("id, display_name, username")
+          .select("id, display_name, username, avatar_url")
           .in("id", authorIds);
 
         if (profilesError) {
@@ -180,6 +181,7 @@ export default function Feed() {
             profile?.username ||
             "Utilisateur AR10P",
           author_username: profile?.username ?? null,
+          author_avatar_url: profile?.avatar_url ?? null,
         };
       });
 
