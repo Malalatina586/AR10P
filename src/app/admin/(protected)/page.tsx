@@ -41,10 +41,14 @@ export default async function AdminDashboard() {
     .from("profiles")
     .select("*", { count: "exact", head: true });
 
+  const { count: publicationCount } = await supabase
+    .from("publications")
+    .select("*", { count: "exact", head: true });
+
   const stats = STATS.map((stat) =>
     stat.label === "Utilisateurs"
       ? { ...stat, value: String(userCount ?? 0) }
-      : stat,
+      : stat.label === "Publications" ? { ...stat, value: String(publicationCount ?? 0) } : stat,
   );
   return (
     <div className="admin-app">
