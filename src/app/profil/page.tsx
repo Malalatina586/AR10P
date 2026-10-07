@@ -96,6 +96,8 @@ export default function ProfilPage() {
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [notifs, setNotifs] = useState(true);
 
   const [topics, setTopics] = useState<string[]>([
@@ -117,13 +119,28 @@ export default function ProfilPage() {
         return;
       }
 
-      const { data } = await supabase
-        .from("profiles")
-        .select("username, display_name, role, avatar_url, created_at")
-        .eq("id", user.id)
-        .single();
+      const [{ data: profileData }, { count: followers }, { count: following }] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select("username, display_name, role, avatar_url, created_at")
+            .eq("id", user.id)
+            .single(),
 
-      setProfile(data);
+          supabase
+            .from("follows")
+            .select("*", { count: "exact", head: true })
+            .eq("following_id", user.id),
+
+          supabase
+            .from("follows")
+            .select("*", { count: "exact", head: true })
+            .eq("follower_id", user.id),
+        ]);
+
+      setProfile(profileData);
+      setFollowersCount(followers ?? 0);
+      setFollowingCount(following ?? 0);
       setLoadingProfile(false);
     }
 
@@ -199,17 +216,17 @@ export default function ProfilPage() {
 
       {/* Statistiques */}
       <dl className="pf-stats">
-        {[
-          ["12", "Lus"],
-          ["5", "Téléchargés"],
-          ["8", "Favoris"],
-        ].map(([n, label]) => (
-          <div key={label}>
-            <dt className="pf-sr">{label}</dt>
-            <dd>{n}</dd>
-            <span aria-hidden>{label}</span>
-          </div>
-        ))}
+        <div>
+          <dt className="pf-sr">Followers</dt>
+          <dd>{loadingProfile ? "—" : followersCount}</dd>
+          <span aria-hidden>Followers</span>
+        </div>
+
+        <div>
+          <dt className="pf-sr">Suivis</dt>
+          <dd>{loadingProfile ? "—" : followingCount}</dd>
+          <span aria-hidden>Suivis</span>
+        </div>
       </dl>
 
       {/* Sujets suivis */}
