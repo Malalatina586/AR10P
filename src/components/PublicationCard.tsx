@@ -1,0 +1,269 @@
+"use client";
+
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { IconHeart, IconMessage, IconShare } from "./Icons";
+
+export type Publication = {
+  id: string;
+  author_id: string;
+  title: string;
+  content: string;
+  category: string;
+  image_url: string | null;
+  created_at: string;
+  author_name: string;
+  author_username: string | null;
+};
+
+type PublicationCardProps = {
+  publication: Publication;
+  initialLikes: number;
+  initialComments: number;
+  initialShares: number;
+  initialLiked: boolean;
+  currentUserId: string | null;
+};
+
+export default function PublicationCard({
+  publication,
+  initialLikes,
+  initialComments,
+  initialShares,
+  initialLiked,
+  currentUserId,
+}: PublicationCardProps) {
+  const supabase = createClient();
+
+  const [liked, setLiked] = useState(initialLiked);
+  const [likes, setLikes] = useState(initialLikes);
+  const [comments, setComments] = useState(initialComments);
+  const [shares, setShares] = useState(initialShares);
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [sendingComment, setSendingComment] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const date = new Date(publication.created_at);
+
+  const publishedLabel = Number.isNaN(date.getTime())
+    ? ""
+    : new Intl.DateTimeFormat("fr-FR", {
+        day: "numeric",
+        month: "short",
+      }).format(date);
+
+  async function toggleLike() {
+    setMessage("");
+
+    if (!currentUserId) {
+      setMessage("Connecte-toi pour aimer cette publication.");
+      return;
+    }
+
+    if (liked) {
+      const { error } = await supabase
+        .from("publication_likes")
+        .delete()
+        .eq("publication_id", publication.id)
+        .eq("user_id", currentUserId);
+
+      if (error) {
+        setMessage("Impossible de modifier le J’aime.");
+        return;
+      }
+
+      setLiked(false);
+      setLikes((value) => Math.max(0, value - 1));
+      return;
+    }
+
+    const { error } = await supabase.from("publication_likes").insert({
+      publication_id: publication.id,
+      user_id: currentUserId,
+    });
+
+    if (error) {
+      setMessage("Impossible d’ajouter le J’aime.");
+      return;
+    }
+
+    setLiked(true);
+    setLikes((value) => value + 1);
+  }
+
+  async function addComment() {
+    const text = commentText.trim();
+
+    if (!currentUserId) {
+      setMessage("Connecte-toi pour commenter.");
+      return;
+    }
+
+    if (!text || sendingComment) return;
+
+    setSendingComment(true);
+    setMessage("");
+
+    const { error } = await supabase.from("publication_comments").insert({
+      publication_id: publication.id,
+      author_id: currentUserId,
+      content: text,
+    });
+
+    if (error) {
+      setMessage("Impossible d’ajouter le commentaire.");
+      setSendingComment(false);
+      return;
+    }
+
+    setCommentText("");
+    setComments((value) => value + 1);
+    setSendingComment(false);
+  }
+
+  async function sharePublication() {
+    setMessage("");
+
+    const shareUrl = window.location.href;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: publication.title,
+          text: publication.content.slice(0, 180),
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+
+      if (currentUserId) {
+        const { error } = await supabase
+          .from("publication_shares")
+          .insert({
+            publication_id: publication.id,
+            user_id: currentUserId,
+          });
+
+        if (!error) {
+          setShares((value) => value + 1);
+        }
+      }
+
+      if (!navigator.share) {
+        setMessage("Lien copié.");
+      }
+    } catch {
+      // L'utilisateur peut annuler le partage.
+    }
+  }
+
+  const initials = publication.author_name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
+  return (
+    <article className="post publication-post">
+      <header className="post-head">
+        <div className="avatar avatar-green">
+          {initials}
+        </div>
+
+        <div className="who">
+          <strong>{publication.author_name}</strong>
+          <span>
+            {publishedLabel} · {publication.category}
+          </span>
+        </div>
+
+        <span className="badge badge-green">
+          Publication
+        </span>
+      </header>
+
+      {publication.image_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={publication.image_url}
+          alt=""
+          className="publication-image"
+        />
+      )}
+
+      <div className="publication-content">
+        <h2 className="post-title">
+          {publication.title}
+        </h2>
+
+        <p className="post-desc">
+          {publication.content}
+        </p>
+      </div>
+
+      <div className="actions">
+        <button
+          className={`stat${liked ? " liked" : ""}`}
+          onClick={() => void toggleLike()}
+          aria-pressed={liked}
+          aria-label="J’aime"
+        >
+          <IconHeart filled={liked} /> {likes}
+        </button>
+
+        <button
+          className="stat"
+          onClick={() => setCommentOpen((value) => !value)}
+          aria-expanded={commentOpen}
+          aria-label="Commentaires"
+        >
+          <IconMessage size={19} /> {comments}
+        </button>
+
+        <button
+          className="stat"
+          onClick={() => void sharePublication()}
+          aria-label="Partager"
+        >
+          <IconShare /> {shares}
+        </button>
+      </div>
+
+      {message && (
+        <p className="publication-message" role="status">
+          {message}
+        </p>
+      )}
+
+      {commentOpen && (
+        <div className="publication-comment-box">
+          <textarea
+            value={commentText}
+            onChange={(event) => setCommentText(event.target.value)}
+            placeholder="Écrire un commentaire..."
+            maxLength={2000}
+            rows={3}
+            disabled={!currentUserId || sendingComment}
+          />
+
+          <button
+            type="button"
+            className="publish-submit"
+            onClick={() => void addComment()}
+            disabled={
+              !currentUserId ||
+              sendingComment ||
+              !commentText.trim()
+            }
+          >
+            {sendingComment ? "Envoi..." : "Commenter"}
+          </button>
+        </div>
+      )}
+    </article>
+  );
+}
