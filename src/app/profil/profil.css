@@ -5,7 +5,7 @@
 .pf-head h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-.4px}
 .pf-ic{width:36px;height:36px;border-radius:50%;background:var(--surface)!important;border:1px solid var(--line)!important;display:grid;place-items:center}
 .pf-id{display:flex;align-items:center;gap:14px;margin-top:16px}
-.pf-av{width:68px;height:68px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center;font-size:22px;font-weight:600}
+.pf-av{width:68px;height:68px;min-width:68px;min-height:68px;border-radius:50%;overflow:hidden;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center;font-size:22px;font-weight:600}
 .pf-nm{font-size:18px;font-weight:600}
 .pf-sb{margin-top:2px;font-size:13px;color:var(--muted)}
 .pf-stats{display:flex;margin:14px 0 0;padding:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:18px}
