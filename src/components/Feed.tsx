@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { FEED, SHOW_SPONSORED_AND_CREATOR } from "@/lib/mock-data";
 import FeedCard from "./FeedCard";
@@ -30,6 +31,14 @@ export default function Feed() {
             <input ref={searchRef} type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." aria-label="Rechercher un sujet" />
           </label>
           <div className="head-actions">
+            <Link
+              href="/publier"
+              className="icon-btn"
+              aria-label="Créer une publication"
+              title="Publier"
+            >
+              +
+            </Link>
             <button className="icon-btn" aria-label="Alertes (bientôt)" title="Alertes — bientôt"><IconBell /></button>
           </div>
         </div>

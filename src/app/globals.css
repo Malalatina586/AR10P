@@ -563,3 +563,25 @@ button:disabled{cursor:default}
 .new-message-button:active{
   transform:scale(.98);
 }
+
+/* Publication */
+.publish-page{min-height:100dvh;background:var(--surface);color:var(--text);padding-bottom:40px}
+.publish-head{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:max(14px,env(safe-area-inset-top,0px)) 16px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.publish-head h1{margin:0;font-size:20px;font-weight:800}
+.publish-back{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;font-size:24px}
+.publish-back:hover{background:var(--surface-alt)}
+.publish-form{padding:20px 16px 40px;display:grid;gap:18px}
+.publish-intro h2{margin:0 0 6px;font-size:22px}
+.publish-intro p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+.publish-field{display:grid;gap:7px}
+.publish-field>span,.publish-upload>span{font-size:15px;font-weight:700}
+.publish-field input,.publish-field textarea,.publish-field select{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:var(--search-bg);color:var(--text);padding:12px;font:inherit;font-size:16px;outline:none}
+.publish-field textarea{resize:vertical;line-height:1.5}
+.publish-field input:focus,.publish-field textarea:focus,.publish-field select:focus{border-color:var(--blue)}
+.publish-field small,.publish-upload small{color:var(--muted);font-size:13px}
+.publish-upload{display:grid;gap:8px}
+.publish-upload input{width:100%;box-sizing:border-box;border:1px dashed var(--line);border-radius:12px;padding:14px;background:var(--surface-alt)}
+.publish-info{padding:14px;border-radius:14px;background:var(--accent-bg);border:1px solid var(--accent-line)}
+.publish-info strong{font-size:15px}
+.publish-info p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.45}
+.publish-submit{border:0;border-radius:12px;background:var(--blue);color:#fff;padding:13px 18px;font-size:16px;font-weight:700}
