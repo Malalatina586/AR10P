@@ -37,7 +37,6 @@ function ExpandablePublicationText({ content }: { content: string }) {
 
   return (
     <>
-      {avatar}
       <p className="post-desc">{open || !isLong ? content : preview}</p>
       {isLong && (
         <button
@@ -98,7 +97,6 @@ function AuthorAvatar({
 
   return (
     <>
-      {avatar}
 
       {open && avatarUrl && (
         <div
