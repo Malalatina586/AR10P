@@ -1,23 +1,31 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 declare global {
   interface Window {
     aclib?: {
-      runAutoTag: (options: { zoneId: string }) => void;
+      runBanner: (options: { zoneId: string }) => void;
     };
   }
 }
 
 export default function AdcashSlot() {
-  useEffect(() => {
-    if (!window.aclib) return;
+  const slotRef = useRef<HTMLDivElement>(null);
 
-    window.aclib.runAutoTag({
-      zoneId: "oz74qhv59l",
+  useEffect(() => {
+    if (!window.aclib || !slotRef.current) return;
+
+    window.aclib.runBanner({
+      zoneId: "12282130",
     });
   }, []);
 
-  return <div className="adcash-slot" aria-label="Publicité" />;
+  return (
+    <div
+      ref={slotRef}
+      className="adcash-slot"
+      aria-label="Publicité"
+    />
+  );
 }
