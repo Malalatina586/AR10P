@@ -9,6 +9,7 @@ import PublicationCard, {
 } from "./PublicationCard";
 import { IconBell, IconSearch } from "./Icons";
 import BottomNav from "./BottomNav";
+import AdcashSlot from "./AdcashSlot";
 import { createClient } from "@/lib/supabase/client";
 
 type PublicationRow = {
@@ -260,7 +261,7 @@ export default function Feed() {
       </header>
 
       <main className="feed">
-        {filteredPublications.map((publication) => {
+        {filteredPublications.map((publication, index) => {
           const state = interactions[publication.id] ?? {
             likes: 0,
             comments: 0,
@@ -268,17 +269,21 @@ export default function Feed() {
             liked: false,
           };
 
-          return (
-            <PublicationCard
-              key={`publication-${publication.id}`}
-              publication={publication}
-              initialLikes={state.likes}
-              initialComments={state.comments}
-              initialShares={state.shares}
-              initialLiked={state.liked}
-              currentUserId={currentUserId}
-            />
-          );
+            return (
+              <div key={`publication-group-${publication.id}`}>
+                <PublicationCard
+                  key={`publication-${publication.id}`}
+                  publication={publication}
+                  initialLikes={state.likes}
+                  initialComments={state.comments}
+                  initialShares={state.shares}
+                  initialLiked={state.liked}
+                  currentUserId={currentUserId}
+                />
+                {index === 1 && <AdcashSlot />}
+              </div>
+            );
+
         })}
 
         {filteredMockItems.map((item) => (
