@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, ChevronRight, Languages, Moon, Settings } from "lucide-react";
+import { Bell, Camera, ChevronRight, Languages, Moon, Settings } from "lucide-react";
 
 import {
   NETWORKS,
@@ -95,6 +95,8 @@ export default function ProfilPage() {
   const { dark, toggleDark } = useTheme();
 
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
@@ -154,6 +156,78 @@ export default function ProfilPage() {
         : [...current, category],
     );
 
+  async function handleAvatarChange(file: File | null) {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Choisis une image.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image trop volumineuse. 5 Mo maximum.");
+      return;
+    }
+
+    const supabase = createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("Connecte-toi pour ajouter une photo.");
+      return;
+    }
+
+    setUploadingAvatar(true);
+
+    try {
+      const extension =
+        file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/${crypto.randomUUID()}.${extension}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, {
+          contentType: file.type,
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Avatar upload error:", uploadError);
+        alert("Impossible d'envoyer la photo.");
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(path);
+
+      const avatarUrl = publicUrlData.publicUrl;
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: avatarUrl })
+        .eq("id", user.id);
+
+      if (updateError) {
+        console.error("Avatar profile update error:", updateError);
+        alert(
+          "La photo a été envoyée, mais le profil n'a pas pu être mis à jour.",
+        );
+        return;
+      }
+
+      setProfile((current) =>
+        current ? { ...current, avatar_url: avatarUrl } : current,
+      );
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -180,23 +254,72 @@ export default function ProfilPage() {
 
       {/* Identité réelle */}
       <div className="pf-id">
-        <div className="pf-av">
-          {profile?.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt=""
-              width={68}
-              height={68}
-              style={{
-                width: "100%",
-                height: "100%",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
-            />
-          ) : (
-            avatarLetter
-          )}
+        <div
+          style={{
+            position: "relative",
+            width: 68,
+            height: 68,
+            flexShrink: 0,
+          }}
+        >
+          <div className="pf-av">
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt=""
+                width={68}
+                height={68}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              avatarLetter
+            )}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Ajouter ou changer la photo de profil"
+            title="Changer la photo de profil"
+            aria-busy={uploadingAvatar}
+            disabled={uploadingAvatar}
+            onClick={() => avatarInputRef.current?.click()}
+            style={{
+              position: "absolute",
+              right: -3,
+              bottom: -3,
+              width: 25,
+              height: 25,
+              padding: 0,
+              display: "grid",
+              placeItems: "center",
+              borderRadius: "50%",
+              background: "var(--blue)",
+              color: "#fff",
+              border: "2px solid var(--surface)",
+              boxShadow: "0 2px 6px rgba(0,0,0,.18)",
+              cursor: uploadingAvatar ? "wait" : "pointer",
+              opacity: uploadingAvatar ? 0.7 : 1,
+            }}
+          >
+            <Camera size={14} strokeWidth={2.2} />
+          </button>
+
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(event) => {
+              const file = event.target.files?.[0] ?? null;
+              void handleAvatarChange(file);
+              event.currentTarget.value = "";
+            }}
+          />
         </div>
 
         <div>
