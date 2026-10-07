@@ -26,6 +26,29 @@ type PublicationCardProps = {
   currentUserId: string | null;
 };
 
+const MAX_PREVIEW_LENGTH = 100;
+
+function ExpandablePublicationText({ content }: { content: string }) {
+  const [open, setOpen] = useState(false);
+  const isLong = content.length > MAX_PREVIEW_LENGTH;
+  const preview = isLong ? `${content.slice(0, MAX_PREVIEW_LENGTH).trimEnd()}…` : content;
+
+  return (
+    <>
+      <p className="post-desc">{open || !isLong ? content : preview}</p>
+      {isLong && (
+        <button
+          type="button"
+          className="see-more"
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? "Voir moins" : "Voir plus"}
+        </button>
+      )}
+    </>
+  );
+}
+
 const initials = (name: string) =>
   name
     .split(/\s+/)
@@ -209,7 +232,7 @@ export default function PublicationCard({
 
         <div>
           <h2 className="post-title">{publication.title}</h2>
-          <p className="post-desc">{publication.content}</p>
+          <ExpandablePublicationText content={publication.content} />
         </div>
       </div>
 
