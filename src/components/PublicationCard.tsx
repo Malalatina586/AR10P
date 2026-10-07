@@ -25,6 +25,15 @@ type PublicationCardProps = {
   currentUserId: string | null;
 };
 
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
 export default function PublicationCard({
   publication,
   initialLikes,
@@ -159,19 +168,11 @@ export default function PublicationCard({
     }
   }
 
-  const initials = publication.author_name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-
   return (
-    <article className="post publication-post">
+    <article className="post">
       <header className="post-head">
         <div className="avatar avatar-green">
-          {initials}
+          {initials(publication.author_name)}
         </div>
 
         <div className="who">
@@ -180,29 +181,20 @@ export default function PublicationCard({
             {publishedLabel} · {publication.category}
           </span>
         </div>
-
-        <span className="badge badge-green">
-          Publication
-        </span>
       </header>
 
-      {publication.image_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={publication.image_url}
-          alt=""
-          className="publication-image"
-        />
-      )}
+      <div className="post-body publication-body">
+        {publication.image_url && (
+          <div className="feed-media feed-media-portrait publication-media">
+            <img src={publication.image_url} alt="" />
+          </div>
+        )}
 
-      <div className="publication-content">
-        <h2 className="post-title">
-          {publication.title}
-        </h2>
+        <div className="publication-text">
+          <h2 className="post-title">{publication.title}</h2>
 
-        <p className="post-desc">
-          {publication.content}
-        </p>
+          <p className="post-desc">{publication.content}</p>
+        </div>
       </div>
 
       <div className="actions">
