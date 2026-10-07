@@ -97,6 +97,7 @@ function AuthorAvatar({
 
   return (
     <>
+      {avatar}
 
       {open && avatarUrl && (
         <div
