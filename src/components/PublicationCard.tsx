@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { IconHeart, IconMessage, IconShare } from "./Icons";
 
@@ -52,6 +53,7 @@ export default function PublicationCard({
   const [commentText, setCommentText] = useState("");
   const [sendingComment, setSendingComment] = useState(false);
   const [message, setMessage] = useState("");
+  const [imageOpen, setImageOpen] = useState(false);
 
   const date = new Date(publication.created_at);
 
@@ -183,16 +185,30 @@ export default function PublicationCard({
         </div>
       </header>
 
-      <div className="post-body publication-body">
-        {publication.image_url && (
-          <div className="feed-media feed-media-portrait publication-media">
-            <img src={publication.image_url} alt="" />
+      <div className="post-body">
+        {publication.image_url ? (
+          <button
+            type="button"
+            className="feed-media feed-media-portrait"
+            onClick={() => setImageOpen(true)}
+            aria-label="Agrandir l’image"
+          >
+            <Image
+              src={publication.image_url}
+              alt=""
+              width={1080}
+              height={1350}
+            />
+          </button>
+        ) : (
+          <div className="tile tile-green" aria-hidden="true">
+            <b>10</b>
+            <span>pages</span>
           </div>
         )}
 
-        <div className="publication-text">
+        <div>
           <h2 className="post-title">{publication.title}</h2>
-
           <p className="post-desc">{publication.content}</p>
         </div>
       </div>
@@ -254,6 +270,29 @@ export default function PublicationCard({
           >
             {sendingComment ? "Envoi..." : "Commenter"}
           </button>
+        </div>
+      )}
+
+      {imageOpen && publication.image_url && (
+        <div
+          className="media-lightbox"
+          onClick={() => setImageOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image agrandie"
+        >
+          <div
+            className="media-lightbox-frame media-lightbox-portrait"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              src={publication.image_url}
+              alt=""
+              fill
+              sizes="92vw"
+              className="media-lightbox-image"
+            />
+          </div>
         </div>
       )}
     </article>
