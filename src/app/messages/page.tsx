@@ -27,6 +27,7 @@ type Conversation = {
   id: string;
   name: string;
   initials: string;
+  avatarUrl: string | null;
   preview: string;
   time: string;
   online?: boolean;
@@ -160,6 +161,7 @@ function MessagesContent() {
               id: conversation.id,
               name,
               initials: getInitials(name),
+              avatarUrl: profile?.avatar_url ?? null,
               preview: "Conversation",
               time: formatConversationTime(conversation.updated_at),
               official: profile?.role === "admin",
@@ -350,7 +352,7 @@ function MessagesContent() {
                     className="conversation-item"
                   >
                     <div className="conversation-avatar">
-                      {getInitials(getDisplayName(profile))}
+                      {profile.avatar_url ? <img src={profile.avatar_url} alt="" width={46} height={46} style={{ width: 46, height: 46, borderRadius: "50%", objectFit: "cover" }} /> : getInitials(getDisplayName(profile))}
                     </div>
                     <div className="conversation-content">
                       <strong>{getDisplayName(profile)}</strong>
@@ -410,7 +412,7 @@ function MessagesContent() {
                   type="button"
                 >
                   <div className="conversation-avatar">
-                    {conversation.initials}
+                    {conversation.avatarUrl ? <img src={conversation.avatarUrl} alt="" width={46} height={46} style={{ width: 46, height: 46, borderRadius: "50%", objectFit: "cover" }} /> : conversation.initials}
                     {conversation.online && (
                       <span className="online-dot" />
                     )}
@@ -456,7 +458,7 @@ function MessagesContent() {
                 </button>
 
                 <div className="conversation-avatar large">
-                  {selected.initials}
+                  {selected.avatarUrl ? <img src={selected.avatarUrl} alt="" width={42} height={42} style={{ width: 42, height: 42, borderRadius: "50%", objectFit: "cover" }} /> : selected.initials}
                 </div>
 
                 <div>

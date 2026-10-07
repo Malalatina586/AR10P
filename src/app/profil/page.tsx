@@ -270,8 +270,8 @@ export default function ProfilPage() {
                 width={68}
                 height={68}
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  width: 68,
+                  height: 68,
                   borderRadius: "50%",
                   objectFit: "cover",
                 }}
