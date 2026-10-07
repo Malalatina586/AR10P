@@ -19,12 +19,12 @@ type PublicationRow = {
   category: string;
   image_url: string | null;
   created_at: string;
-  profiles:
-    | {
-        display_name: string | null;
-        username: string | null;
-      }
-    | null;
+};
+
+type ProfileRow = {
+  id: string;
+  display_name: string | null;
+  username: string | null;
 };
 
 type InteractionState = {
@@ -41,6 +41,7 @@ export default function Feed() {
   const supabase = useMemo(() => createClient(), []);
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+
   const [publications, setPublications] = useState<Publication[]>([]);
   const [interactions, setInteractions] = useState<
     Record<string, InteractionState>
@@ -64,19 +65,9 @@ export default function Feed() {
 
       const { data, error } = await supabase
         .from("publications")
-        .select(`
-          id,
-          author_id,
-          title,
-          content,
-          category,
-          image_url,
-          created_at,
-          profiles:author_id (
-            display_name,
-            username
-          )
-        `)
+        .select(
+          "id, author_id, title, content, category, image_url, created_at",
+        )
         .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(50);
@@ -93,11 +84,29 @@ export default function Feed() {
       }
 
       const rows = (data ?? []) as PublicationRow[];
-      const ids = rows.map((row) => row.id);
+      const authorIds = [...new Set(rows.map((row) => row.author_id))];
+      const publicationIds = rows.map((row) => row.id);
+
+      const profilesById: Record<string, ProfileRow> = {};
+
+      if (authorIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, display_name, username")
+          .in("id", authorIds);
+
+        if (profilesError) {
+          console.error("Erreur chargement profils:", profilesError);
+        }
+
+        for (const profile of (profiles ?? []) as ProfileRow[]) {
+          profilesById[profile.id] = profile;
+        }
+      }
 
       const nextInteractions: Record<string, InteractionState> = {};
 
-      for (const id of ids) {
+      for (const id of publicationIds) {
         nextInteractions[id] = {
           likes: 0,
           comments: 0,
@@ -106,27 +115,24 @@ export default function Feed() {
         };
       }
 
-      if (ids.length > 0) {
-        const [
-          likesResult,
-          commentsResult,
-          sharesResult,
-        ] = await Promise.all([
-          supabase
-            .from("publication_likes")
-            .select("publication_id,user_id")
-            .in("publication_id", ids),
+      if (publicationIds.length > 0) {
+        const [likesResult, commentsResult, sharesResult] =
+          await Promise.all([
+            supabase
+              .from("publication_likes")
+              .select("publication_id, user_id")
+              .in("publication_id", publicationIds),
 
-          supabase
-            .from("publication_comments")
-            .select("publication_id")
-            .in("publication_id", ids),
+            supabase
+              .from("publication_comments")
+              .select("publication_id")
+              .in("publication_id", publicationIds),
 
-          supabase
-            .from("publication_shares")
-            .select("publication_id")
-            .in("publication_id", ids),
-        ]);
+            supabase
+              .from("publication_shares")
+              .select("publication_id")
+              .in("publication_id", publicationIds),
+          ]);
 
         for (const like of likesResult.data ?? []) {
           const state = nextInteractions[like.publication_id];
@@ -157,20 +163,24 @@ export default function Feed() {
         }
       }
 
-      const mapped: Publication[] = rows.map((row) => ({
-        id: row.id,
-        author_id: row.author_id,
-        title: row.title,
-        content: row.content,
-        category: row.category,
-        image_url: row.image_url,
-        created_at: row.created_at,
-        author_name:
-          row.profiles?.display_name ||
-          row.profiles?.username ||
-          "Utilisateur AR10P",
-        author_username: row.profiles?.username ?? null,
-      }));
+      const mapped: Publication[] = rows.map((row) => {
+        const profile = profilesById[row.author_id];
+
+        return {
+          id: row.id,
+          author_id: row.author_id,
+          title: row.title,
+          content: row.content,
+          category: row.category,
+          image_url: row.image_url,
+          created_at: row.created_at,
+          author_name:
+            profile?.display_name ||
+            profile?.username ||
+            "Utilisateur AR10P",
+          author_username: profile?.username ?? null,
+        };
+      });
 
       if (!cancelled) {
         setPublications(mapped);
@@ -201,18 +211,13 @@ export default function Feed() {
   const filteredMockItems = useMemo(() => {
     const q = norm(query.trim());
 
-    return FEED
-      .filter(
-        (item) =>
-          SHOW_SPONSORED_AND_CREATOR || item.type === "summary",
-      )
-      .filter(
-        (item) =>
-          !q ||
-          norm(
-            `${item.title} ${item.description} ${item.category}`,
-          ).includes(q),
-      );
+    return FEED.filter(
+      (item) => SHOW_SPONSORED_AND_CREATOR || item.type === "summary",
+    ).filter(
+      (item) =>
+        !q ||
+        norm(`${item.title} ${item.description} ${item.category}`).includes(q),
+    );
   }, [query]);
 
   return (
@@ -256,13 +261,12 @@ export default function Feed() {
 
       <main className="feed">
         {filteredPublications.map((publication) => {
-          const state =
-            interactions[publication.id] ?? {
-              likes: 0,
-              comments: 0,
-              shares: 0,
-              liked: false,
-            };
+          const state = interactions[publication.id] ?? {
+            likes: 0,
+            comments: 0,
+            shares: 0,
+            liked: false,
+          };
 
           return (
             <PublicationCard
