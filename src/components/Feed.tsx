@@ -7,10 +7,11 @@ import FeedCard from "./FeedCard";
 import PublicationCard, {
   type Publication,
 } from "./PublicationCard";
-import { IconBell, IconSearch } from "./Icons";
+import { IconSearch } from "./Icons";
 import BottomNav from "./BottomNav";
 import AdcashSlot from "./AdcashSlot";
 import { createClient } from "@/lib/supabase/client";
+import NotificationBell from "./NotificationBell";
 
 type PublicationRow = {
   id: string;
@@ -251,15 +252,9 @@ export default function Feed() {
               +
             </Link>
 
-            <button
-              className="icon-btn"
-              aria-label="Alertes (bientôt)"
-              title="Alertes — bientôt"
-            >
-              <IconBell />
-            </button>
+            <NotificationBell />
+            </div>
           </div>
-        </div>
       </header>
 
       <main className="feed">
