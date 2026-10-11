@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import {
+  supabase,
   getCurrentUser,
   getMyConversations,
   getProfile,
@@ -241,16 +242,24 @@ function MessagesContent() {
 
       const loadedMessages = await getMessages(id);
 
-      setMessagesByConversation((current) => ({
-        ...current,
-        [id]: loadedMessages.map((message: MessageRow) => ({
-          id: message.id,
-          from: message.sender_id === currentUserId ? "me" : "them",
-          text: message.body,
-          time: formatTime(message.created_at),
-          read: Boolean(message.read_at),
-        })),
+      const mappedMessages: Message[] = loadedMessages.map((message: MessageRow) => ({
+        id: message.id,
+        from: message.sender_id === currentUserId ? "me" : "them",
+        text: message.body,
+        time: formatTime(message.created_at),
+        read: Boolean(message.read_at),
       }));
+
+      setMessagesByConversation((current) => {
+        const existing = current[id] ?? [];
+        const loadedIds = new Set(mappedMessages.map((message) => message.id));
+        const newMessages = existing.filter((message) => !loadedIds.has(message.id));
+
+        return {
+          ...current,
+          [id]: [...mappedMessages, ...newMessages],
+        };
+      });
     } catch (loadError) {
       console.error("Erreur chargement messages:", loadError);
       setError("Impossible de charger cette conversation.");
@@ -269,6 +278,69 @@ function MessagesContent() {
     void Promise.resolve().then(() => openConversation(conversationId));
   }, [searchParams, conversations, openConversation]);
 
+
+
+  useEffect(() => {
+    if (!selectedId || !currentUserId) return;
+
+    const conversationId = selectedId;
+
+    const channel = supabase
+      .channel(`messages:${conversationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const row = payload.new as MessageRow;
+
+          if (!row.id || row.conversation_id !== conversationId) return;
+
+          const message: Message = {
+            id: row.id,
+            from: row.sender_id === currentUserId ? "me" : "them",
+            text: row.body,
+            time: formatTime(row.created_at),
+            read: Boolean(row.read_at),
+          };
+
+          setMessagesByConversation((current) => {
+            const existing = current[conversationId] ?? [];
+            if (existing.some((item) => item.id === message.id)) return current;
+
+            return {
+              ...current,
+              [conversationId]: [...existing, message],
+            };
+          });
+
+          setConversations((current) =>
+            current.map((conversation) =>
+              conversation.id === conversationId
+                ? {
+                    ...conversation,
+                    preview: row.body,
+                    time: formatTime(row.created_at),
+                  }
+                : conversation,
+            ),
+          );
+        },
+      )
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.error("Erreur abonnement Realtime :", status);
+        }
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [selectedId, currentUserId]);
 
 
   function closeConversation() {
@@ -298,10 +370,18 @@ function MessagesContent() {
         read: false,
       };
 
-      setMessagesByConversation((current) => ({
-        ...current,
-        [selected.id]: [...(current[selected.id] ?? []), message],
-      }));
+      setMessagesByConversation((current) => {
+        const existing = current[selected.id] ?? [];
+
+        if (existing.some((item) => item.id === message.id)) {
+          return current;
+        }
+
+        return {
+          ...current,
+          [selected.id]: [...existing, message],
+        };
+      });
 
       setConversations((current) =>
         current.map((conversation) =>
